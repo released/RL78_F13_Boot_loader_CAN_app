@@ -6,11 +6,24 @@ Boot-aware application for RL78/F13 R5F10BMG, paired with
 First engineering delivery: keep App1.5.0,19244B/CRC CA0DF55C with matching
 Boot1.5.0 and Tool0082/F24App1.5.0. User log182253 confirms301 block ACKs,
 10963ms and matching END; it does not contain new post-reset App UART proof.
-See the [delivery manifest](../../../python/simple_renesas_isp_tool/docs/FIRST_DELIVERY_20261015_zh-TW.md)
-for exact hashes and initial combined HEX versus subsequent CAN BIN use.
+See the [CAN operating guide](https://released.github.io/slide_isp_tool_for_RL78/)
+for initial combined HEX versus subsequent CAN BIN use and validation limits.
 
-Start with the [RL78 Boot/App porting guide (zh-TW)](../../../python/simple_renesas_isp_tool/docs/RL78_BOOT_APP_PORTING_GUIDE_zh-TW.md)
+Start with the [RL78 Boot/App porting guide (zh-TW)](https://released.github.io/slide_boot_loader_for_RL78/#boot-app-porting)
 for the complete startup/linker/IRQ/build/installation workflow.
+
+## Public examples and checkout layout
+
+- [CAN Transfer benchmark](https://github.com/released/RL78_F13_CAN_Transfer).
+- [Required sibling Boot project](https://github.com/released/RL78_F13_Boot_loader_CAN).
+- [This App project](https://github.com/released/RL78_F13_Boot_loader_CAN_app).
+
+Clone Boot and App into the same parent directory using the exact repository
+names. For Download ZIP, remove the `-main` directory suffix. This App references
+Boot's board sources, CAN configuration and IRQ generator; the App repository
+alone is not a self-contained build. Build Boot before App for initial combined
+HEX generation. Compiler executable paths below are installation examples,
+not links to project sources.
 
 ## App-only IRQ extension
 
@@ -99,11 +112,12 @@ and its RS-CAN Lite acceptance rule receives only standard data frames on the
 configured request ID. Change CAN IDs in the boot project header, then rebuild
 both projects.
 
-See `..\RL78_F13_Boot_loader_CAN\CAN_BOOT_PROTOCOL.md` for the update protocol.
+See the [CAN boot protocol](https://github.com/released/RL78_F13_Boot_loader_CAN/blob/main/CAN_BOOT_PROTOCOL.md)
+for the update protocol.
 For reset/interrupt relocation and maintenance, read:
 
-- [English guide](../RL78_F13_Boot_loader_CAN/INTERRUPT_VECTOR_GUIDE_EN.md)
-- [繁體中文指南](../RL78_F13_Boot_loader_CAN/INTERRUPT_VECTOR_GUIDE_zh-TW.md)
+- [English guide](https://github.com/released/RL78_F13_Boot_loader_CAN/blob/main/INTERRUPT_VECTOR_GUIDE_EN.md)
+- [繁體中文指南](https://github.com/released/RL78_F13_Boot_loader_CAN/blob/main/INTERRUPT_VECTOR_GUIDE_zh-TW.md)
 
 Before a release, update the application semantic version and build fields in
 `ftable.inc`. Layout, identity and CAN declarations are taken from the paired
