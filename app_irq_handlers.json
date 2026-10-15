@@ -1,0 +1,6 @@
+{
+  "0x08": "r_intc0_interrupt",
+  "0x16": "r_uart0_interrupt_send",
+  "0x18": "r_uart0_interrupt_receive",
+  "0x1E": "r_tmr_rj0_interrupt"
+}
