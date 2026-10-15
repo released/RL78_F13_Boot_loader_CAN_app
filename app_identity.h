@@ -1,4 +1,4 @@
-/* Generated from this app's ftable.inc. Do not edit. */
+/* Generated from this App's app_image.json. Do not edit. */
 #ifndef F13_APP_IDENTITY_H
 #define F13_APP_IDENTITY_H
 #define CAN_BOOT_APP_FIRMWARE_VERSION (0x00010500UL)

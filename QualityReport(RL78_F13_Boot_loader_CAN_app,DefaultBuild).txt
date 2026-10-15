@@ -1,0 +1,324 @@
+QualityReport
+2026年10月16日 上午 12:48:22
+
+------ Start build(RL78_F13_Boot_loader_CAN_app, DefaultBuild) ------
+D:\SourceCode\_Avery_Renesas\CS+\RL78_F13_Boot_loader_CAN_app>powershell.exe -NoProfile -ExecutionPolicy Bypass -File "..\RL78_F13_Boot_loader_CAN\generate_irq_contract.ps1" -Mode App -AppProject "." 
+F13 App IRQ contract prepared.
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RL\V1.15.01\Bin\ccrl.exe custom_func.c -cpu=S3 -o DefaultBuild\custom_func.obj "-dev=C:\Program Files (x86)\Renesas Electronics\CS+\CC\Device\RL78\Devicefile\DR5F10BMG.DVF" -g -g_line -Onothing -I src\code_gen -I .\ -I . -lang=c99 -c -MAKEUD=DefaultBuild -exec_time=C:\Users\averyc\AppData\Local\Temp\CSPlusBuildTool_7cbe66ec0f754c28ae8c1305ee8affd5pj2diiqt.tpn -msg_lang=english
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RL\V1.15.01\Bin\ccrl.exe src\code_gen\r_main.c -cpu=S3 -o DefaultBuild\r_main.obj "-dev=C:\Program Files (x86)\Renesas Electronics\CS+\CC\Device\RL78\Devicefile\DR5F10BMG.DVF" -g -g_line -Onothing -I src\code_gen -I .\ -I . -lang=c99 -c -MAKEUD=DefaultBuild -exec_time=C:\Users\averyc\AppData\Local\Temp\CSPlusBuildTool_b4c57c5e873e4e5580fc0ddea99ebc2bpggbjgmx.hfg -msg_lang=english
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RL\V1.15.01\Bin\ccrl.exe src\code_gen\r_cg_intc.c -cpu=S3 -o DefaultBuild\r_cg_intc.obj "-dev=C:\Program Files (x86)\Renesas Electronics\CS+\CC\Device\RL78\Devicefile\DR5F10BMG.DVF" -g -g_line -Onothing -I src\code_gen -I .\ -I . -lang=c99 -c -MAKEUD=DefaultBuild -exec_time=C:\Users\averyc\AppData\Local\Temp\CSPlusBuildTool_800051d5f8444534909d26776e7399a0fkozizw3.uvx -msg_lang=english
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RL\V1.15.01\Bin\ccrl.exe src\code_gen\r_cg_port.c -cpu=S3 -o DefaultBuild\r_cg_port.obj "-dev=C:\Program Files (x86)\Renesas Electronics\CS+\CC\Device\RL78\Devicefile\DR5F10BMG.DVF" -g -g_line -Onothing -I src\code_gen -I .\ -I . -lang=c99 -c -MAKEUD=DefaultBuild -exec_time=C:\Users\averyc\AppData\Local\Temp\CSPlusBuildTool_67dc6cb31211413aa134d2d6b865148fdybn0jge.e55 -msg_lang=english
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RL\V1.15.01\Bin\ccrl.exe ..\RL78_F13_Boot_loader_CAN\f13_board_support.c -cpu=S3 -o DefaultBuild\f13_board_support.obj "-dev=C:\Program Files (x86)\Renesas Electronics\CS+\CC\Device\RL78\Devicefile\DR5F10BMG.DVF" -g -g_line -Onothing -I src\code_gen -I .\ -I . -lang=c99 -c -MAKEUD=DefaultBuild -exec_time=C:\Users\averyc\AppData\Local\Temp\CSPlusBuildTool_4d0f235219694254a9ac029c91f7187drqacwffj.ud5 -msg_lang=english
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RL\V1.15.01\Bin\ccrl.exe src\code_gen\r_cg_cgc.c -cpu=S3 -o DefaultBuild\r_cg_cgc.obj "-dev=C:\Program Files (x86)\Renesas Electronics\CS+\CC\Device\RL78\Devicefile\DR5F10BMG.DVF" -g -g_line -Onothing -I src\code_gen -I .\ -I . -lang=c99 -c -MAKEUD=DefaultBuild -exec_time=C:\Users\averyc\AppData\Local\Temp\CSPlusBuildTool_346b34e24c064566b995d18b84961e85ayr0finf.1n1 -msg_lang=english
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RL\V1.15.01\Bin\ccrl.exe src\code_gen\r_cg_serial.c -cpu=S3 -o DefaultBuild\r_cg_serial.obj "-dev=C:\Program Files (x86)\Renesas Electronics\CS+\CC\Device\RL78\Devicefile\DR5F10BMG.DVF" -g -g_line -Onothing -I src\code_gen -I .\ -I . -lang=c99 -c -MAKEUD=DefaultBuild -exec_time=C:\Users\averyc\AppData\Local\Temp\CSPlusBuildTool_60ea59a5e1a2436886b84a74d9c5a18c5npv0ltw.dyn -msg_lang=english
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RL\V1.15.01\Bin\ccrl.exe src\code_gen\r_cg_timer.c -cpu=S3 -o DefaultBuild\r_cg_timer.obj "-dev=C:\Program Files (x86)\Renesas Electronics\CS+\CC\Device\RL78\Devicefile\DR5F10BMG.DVF" -g -g_line -Onothing -I src\code_gen -I .\ -I . -lang=c99 -c -MAKEUD=DefaultBuild -exec_time=C:\Users\averyc\AppData\Local\Temp\CSPlusBuildTool_6efa6289e6fa4e2a9e10ac9e9076b482yapo5zot.ydy -msg_lang=english
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RL\V1.15.01\Bin\ccrl.exe src\code_gen\r_systeminit.c -cpu=S3 -o DefaultBuild\r_systeminit.obj "-dev=C:\Program Files (x86)\Renesas Electronics\CS+\CC\Device\RL78\Devicefile\DR5F10BMG.DVF" -g -g_line -Onothing -I src\code_gen -I .\ -I . -lang=c99 -c -MAKEUD=DefaultBuild -exec_time=C:\Users\averyc\AppData\Local\Temp\CSPlusBuildTool_1f36b59a00c94f9facb8df16d9d1cd8dma1lfksw.j2m -msg_lang=english
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RL\V1.15.01\Bin\ccrl.exe misc_config.c -cpu=S3 -o DefaultBuild\misc_config.obj "-dev=C:\Program Files (x86)\Renesas Electronics\CS+\CC\Device\RL78\Devicefile\DR5F10BMG.DVF" -g -g_line -Onothing -I src\code_gen -I .\ -I . -lang=c99 -c -MAKEUD=DefaultBuild -exec_time=C:\Users\averyc\AppData\Local\Temp\CSPlusBuildTool_7d819a2932d44d89bec432ca313b49bak0ccvtjk.r2p -msg_lang=english
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RL\V1.15.01\Bin\ccrl.exe src\code_gen\r_cg_cgc_user.c -cpu=S3 -o DefaultBuild\r_cg_cgc_user.obj "-dev=C:\Program Files (x86)\Renesas Electronics\CS+\CC\Device\RL78\Devicefile\DR5F10BMG.DVF" -g -g_line -Onothing -I src\code_gen -I .\ -I . -lang=c99 -c -MAKEUD=DefaultBuild -exec_time=C:\Users\averyc\AppData\Local\Temp\CSPlusBuildTool_b221366a29094126ac64f2df7f7c6f3cmtz2xmmu.ytr -msg_lang=english
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RL\V1.15.01\Bin\ccrl.exe src\code_gen\r_cg_port_user.c -cpu=S3 -o DefaultBuild\r_cg_port_user.obj "-dev=C:\Program Files (x86)\Renesas Electronics\CS+\CC\Device\RL78\Devicefile\DR5F10BMG.DVF" -g -g_line -Onothing -I src\code_gen -I .\ -I . -lang=c99 -c -MAKEUD=DefaultBuild -exec_time=C:\Users\averyc\AppData\Local\Temp\CSPlusBuildTool_b22bd011941941d3a608692ebe45c01camikohiw.ewv -msg_lang=english
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RL\V1.15.01\Bin\ccrl.exe src\code_gen\r_cg_serial_user.c -cpu=S3 -o DefaultBuild\r_cg_serial_user.obj "-dev=C:\Program Files (x86)\Renesas Electronics\CS+\CC\Device\RL78\Devicefile\DR5F10BMG.DVF" -g -g_line -Onothing -I src\code_gen -I .\ -I . -lang=c99 -c -MAKEUD=DefaultBuild -exec_time=C:\Users\averyc\AppData\Local\Temp\CSPlusBuildTool_50ec7eb55e40480da1392082da16ff60ldkaugps.xkr -msg_lang=english
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RL\V1.15.01\Bin\ccrl.exe src\code_gen\r_cg_intc_user.c -cpu=S3 -o DefaultBuild\r_cg_intc_user.obj "-dev=C:\Program Files (x86)\Renesas Electronics\CS+\CC\Device\RL78\Devicefile\DR5F10BMG.DVF" -g -g_line -Onothing -I src\code_gen -I .\ -I . -lang=c99 -c -MAKEUD=DefaultBuild -exec_time=C:\Users\averyc\AppData\Local\Temp\CSPlusBuildTool_0492278af3ba42fa90eb0a5570c5bc26a0j0eylh.hoz -msg_lang=english
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RL\V1.15.01\Bin\ccrl.exe src\code_gen\r_cg_timer_user.c -cpu=S3 -o DefaultBuild\r_cg_timer_user.obj "-dev=C:\Program Files (x86)\Renesas Electronics\CS+\CC\Device\RL78\Devicefile\DR5F10BMG.DVF" -g -g_line -Onothing -I src\code_gen -I .\ -I . -lang=c99 -c -MAKEUD=DefaultBuild -exec_time=C:\Users\averyc\AppData\Local\Temp\CSPlusBuildTool_1348e3ed9fbd4576bb196e2ead285cfahhsexn4j.2bb -msg_lang=english
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RL\V1.15.01\Bin\ccrl.exe ftable_RL78_F13.asm -cpu=S3 -o DefaultBuild\ftable_RL78_F13.obj "-dev=C:\Program Files (x86)\Renesas Electronics\CS+\CC\Device\RL78\Devicefile\DR5F10BMG.DVF" -g -c -MAKEUD=DefaultBuild -exec_time=C:\Users\averyc\AppData\Local\Temp\CSPlusBuildTool_f3a230495b6c413b8f677fc79dee824dbdy5rrab.5zk -msg_lang=english
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RL\V1.15.01\Bin\ccrl.exe stkinit.asm -cpu=S3 -o DefaultBuild\stkinit.obj "-dev=C:\Program Files (x86)\Renesas Electronics\CS+\CC\Device\RL78\Devicefile\DR5F10BMG.DVF" -g -c -MAKEUD=DefaultBuild -exec_time=C:\Users\averyc\AppData\Local\Temp\CSPlusBuildTool_2123745e951d42ce827dc56909d2a23dyu0zb224.u5h -msg_lang=english
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RL\V1.15.01\Bin\ccrl.exe cstart.asm -cpu=S3 -o DefaultBuild\cstart.obj "-dev=C:\Program Files (x86)\Renesas Electronics\CS+\CC\Device\RL78\Devicefile\DR5F10BMG.DVF" -g -c -MAKEUD=DefaultBuild -exec_time=C:\Users\averyc\AppData\Local\Temp\CSPlusBuildTool_267f393f77134df58dd8f67765ac922deknxiorf.lo3 -msg_lang=english
+C:\Program Files (x86)\Renesas Electronics\CS+\CC\CC-RL\V1.15.01\Bin\rlink.exe -MAKEUD=DefaultBuild\RL78_F13_Boot_loader_CAN_app.lk.ud -subcommand=DefaultBuild\RL78_F13_Boot_loader_CAN_app.clnk
+W0561017:Paid license of CC-RL V1 is not found, and the evaluation period has expired. Please consider purchasing the product.
+RAMDATA SECTION:  000000b5 Byte(s)
+ROMDATA SECTION:  000005b7 Byte(s)
+PROGRAM SECTION:  00004805 Byte(s)
+W0561017:Paid license of CC-RL V1 is not found, and the evaluation period has expired. Please consider purchasing the product.
+W0561017:Paid license of CC-RL V1 is not found, and the evaluation period has expired. Please consider purchasing the product.
+Renesas Optimizing Linker Completed
+D:\SourceCode\_Avery_Renesas\CS+\RL78_F13_Boot_loader_CAN_app>powershell.exe -NoProfile -ExecutionPolicy Bypass -File "generate_update_image.ps1" 
+F13 App IRQ contract verified.
+Generated 19244 bytes; linked end = 0x06B26; CRC address = 0x06B28; target = 0xF13B; version = 0x00010500; build = 20261015; app start = 0x2000; capacity = 0x1E000; CRC32 = 0xCA0DF55C
+------ Build ended(Error:0, Warning:3)(RL78_F13_Boot_loader_CAN_app, DefaultBuild) ------
+
+--- CommandFile 1 ---
+DefaultBuild\RL78_F13_Boot_loader_CAN_app.clnk :
+-Input=DefaultBuild\cstart.obj
+-Input=DefaultBuild\stkinit.obj
+-Input=DefaultBuild\custom_func.obj
+-Input=DefaultBuild\misc_config.obj
+-Input=DefaultBuild\r_main.obj
+-Input=DefaultBuild\r_systeminit.obj
+-Input=DefaultBuild\r_cg_cgc.obj
+-Input=DefaultBuild\r_cg_cgc_user.obj
+-Input=DefaultBuild\r_cg_port.obj
+-Input=DefaultBuild\r_cg_port_user.obj
+-Input=DefaultBuild\r_cg_intc.obj
+-Input=DefaultBuild\r_cg_intc_user.obj
+-Input=DefaultBuild\r_cg_serial.obj
+-Input=DefaultBuild\r_cg_serial_user.obj
+-Input=DefaultBuild\r_cg_timer.obj
+-Input=DefaultBuild\r_cg_timer_user.obj
+-Input=DefaultBuild\ftable_RL78_F13.obj
+-Input=DefaultBuild\f13_board_support.obj
+-SECURITY_ID=00000000000000000000
+-DEVICE=C:\Program Files (x86)\Renesas Electronics\CS+\CC\Device\RL78\Devicefile\DR5F10BMG.DVF
+-DEBug
+-NOCOmpress
+-NOOPtimize
+-OUtput=DefaultBuild\RL78_F13_Boot_loader_CAN_app.abs
+-OCDBG=84
+-DEBUG_MONITOR=1FE00-1FFFF
+-USER_OPT_BYTE=E9FFF8
+-OCDTR
+-ENTry=_start
+-LISt=DefaultBuild\RL78_F13_Boot_loader_CAN_app.map
+-SHow=ALL
+-STARt=.const,.text,.RLIB,.SLIB,.textf,.constf,.data,.sdata,.init_array/02200,.dataR,.bss/FE500,.sdataR,.sbss/FFE20
+-ROm=.data=.dataR
+-ROm=.sdata=.sdataR
+-NOMessage
+-Total_size
+-NOLOgo
+-LIBrary=DefaultBuild\RL78_F13_Boot_loader_CAN_app.lib
+-end
+-Input=DefaultBuild\RL78_F13_Boot_loader_CAN_app.abs
+-DEVICE=C:\Program Files (x86)\Renesas Electronics\CS+\CC\Device\RL78\Devicefile\DR5F10BMG.DVF
+-OUtput=DefaultBuild\RL78_F13_Boot_loader_CAN_app.hex
+-FOrm=Hexadecimal
+-NOMessage
+-end
+-Input=DefaultBuild\RL78_F13_Boot_loader_CAN_app.abs
+-DEVICE=C:\Program Files (x86)\Renesas Electronics\CS+\CC\Device\RL78\Devicefile\DR5F10BMG.DVF
+-OUtput=DefaultBuild\flash2000_1FFFF.hex=2000-1FFFF
+-FOrm=Hexadecimal
+-SPace=FF
+-NOMessage
+-exit
+
+
+--- SHA1 hash value of output files ---
+D:\SourceCode\_Avery_Renesas\CS+\RL78_F13_Boot_loader_CAN_app\DefaultBuild\RL78_F13_Boot_loader_CAN_app.abs: 32663c95043608689339042f07915e7d95b629cb
+D:\SourceCode\_Avery_Renesas\CS+\RL78_F13_Boot_loader_CAN_app\DefaultBuild\RL78_F13_Boot_loader_CAN_app.hex: 5a8811c319f12344a57e5e2a34ac58d5e0bb2357
+D:\SourceCode\_Avery_Renesas\CS+\RL78_F13_Boot_loader_CAN_app\DefaultBuild\flash2000_1FFFF.hex: 6213e7f277260175de49159b9ddb24b158ec5d3f
+
+
+--- System Information ---
+*OS Version
+ Microsoft Windows 11 專業版 (-, 10.0.26200, WOW64)
+*Language
+ 中文(台灣)
+*.NET Framework Version
+ Microsoft .NET Framework 4 [.NET 4.8 or later] (533509)
+*WebView2 Version
+ 155.0.4283.45
+
+--- Application Information ---
+*Product Name
+ CS+ for CC
+*Package Version
+ V8.14.00  [02 Jun 2025]
+*Version
+ V9.14.00.04 [25 Apr 2025]
+*Assembly Version
+ 3.12.10.1
+*Sales Area
+ Japan
+*Product License
+ 
+*Execution Place
+ C:\Program Files (x86)\Renesas Electronics\CS+\CC
+*Memory Usage
+ *Private Working Set
+  95 MB
+ *Number of GDI Objects
+  2001
+ *Number of USER Objects
+  735
+ *Opened Files
+  0 editors, 0 files, 0 KB
+
+--- Build Tool Plug-in Information ---
+RH850 Build tool CC-RH Plug-in
+ *Version
+  V8.14.00.01 [10 Apr 2025]
+ *Assembly Version
+  1.1.10.12
+ *DLL File Name
+  BuildToolCCRH.dll
+RL78 Build tool CC-RL Plug-in
+ *Version
+  V8.14.00.01 [10 Apr 2025]
+ *Assembly Version
+  1.0.0.0
+ *DLL File Name
+  BuildToolCCRL.dll
+RX Build tool CC-RX Plug-in
+ *Version
+  V8.14.00.01 [10 Apr 2025]
+ *Assembly Version
+  3.12.10.1
+ *DLL File Name
+  BuildToolCCRX.dll
+RH850 Build tool GHS CCRH850 Plug-in
+ *Version
+  V1.11.00.01 [18 Apr 2025]
+ *Assembly Version
+  1.0.0.0
+ *DLL File Name
+  BuildToolGHSCCRH850.dll
+
+--- Debug Tool Plug-in Information ---
+Debugger Collection Plug-in
+ *Version
+  V8.14.00.02 [08 May 2025]
+ *Assembly Version
+  2.12.10.1
+ *DLL File Name
+  DebugToolCollection.dll
+
+--- Other Plug-in Information ---
+Code Generator Plug-in for RH850
+ *Version
+  V1.02.02.05 [25 May 2018]
+ *Assembly Version
+  1.0.0.0
+ *DLL File Name
+  CodeGeneratorRH850.dll
+Code Generator Plug-in
+ *Version
+  V4.08.06.01 [28 Oct 2022]
+ *Assembly Version
+  3.0.0.0
+ *DLL File Name
+  CodePart.dll
+Code Generator/PinView Plug-in
+ *Version
+  V2.10.07.02 [08 Nov 2021]
+ *Assembly Version
+  1.0.0.0
+ *DLL File Name
+  CodePart2.dll
+Debug Console Plug-in
+ *Version
+  V8.09.00.03 [24 Nov 2022]
+ *Assembly Version
+  8.9.0.0
+ *DLL File Name
+  DebugConsole.dll
+Quick and Effective tool solution - QE
+ *Version
+  V9.14.00.02 [08 Apr 2025]
+ *Assembly Version
+  1.15.10.16
+ *DLL File Name
+  InCarTools.dll
+Pin Configurator Plug-in
+ *Version
+  V1.54.01.01 [31 Jul 2014]
+ *Assembly Version
+  1.6.10.23
+ *DLL File Name
+  PinConfig.dll
+Program Analyzer Plug-in(!)
+ *Version
+  V4.13.00.03 [24 May 2023]
+ *Assembly Version
+  3.12.11.9
+ *DLL File Name
+  ProgramAnalyzer.dll
+IronPython Console Plug-in
+ *Version
+  V1.49.00.02 [08 Nov 2024]
+ *Assembly Version
+  1.6.10.23
+ *DLL File Name
+  PythonConsole.dll
+Editor plug-in DLL
+ *Version
+  V1.21.00.01 [09 Apr 2025]
+ *Assembly Version
+  1.1.0.0
+ *DLL File Name
+  SEditor.dll
+Smart Configurator for RH850 Communication Plug-in
+ *Version
+  V1.02.11.01 [08 May 2025]
+ *Assembly Version
+  1.0.0.0
+ *DLL File Name
+  SmcCodePartRH850.dll
+Smart Configurator for RL78 Communication Plug-in
+ *Version
+  V1.00.11.01 [25 Nov 2024]
+ *Assembly Version
+  1.0.0.0
+ *DLL File Name
+  SmcCodePartRL78.dll
+Stack Usage Tracer
+ *Version
+  V1.05.00.02 [30 Jul 2014]
+ *Assembly Version
+  1.30.11.15
+ *DLL File Name
+  Stk.dll
+Update Manager Plug-in
+ *Version
+  V2.05.00.04 [30 May 2025]
+ *Assembly Version
+  1.25.4.17
+ *DLL File Name
+  Update.dll
+
+Debug Tool Common Interface
+ *Version
+  V8.14.00.02 [08 May 2025]
+ *Assembly Version
+  3.12.10.1
+ *DLL File Name
+  CommonDebuggerInterface.dll
+Device Information Common Interface
+ *Version
+  V9.14.00.02 [08 Apr 2025]
+ *Assembly Version
+  3.0.0.0
+ *DLL File Name
+  DeviceInformation.dll
+
+--- Main Project Information ---
+D:\SourceCode\_Avery_Renesas\CS+\RL78_F13_Boot_loader_CAN_app\RL78_F13_Boot_loader_CAN_app.mtpj
+Microcontroller Information
+ *R5F10BMG
+  *File Name: Version
+   RL78_Productlist.xml: V8.140100
+   R5F10BMG_common.xml: V1.13.00.XX.02
+   DR5F10BMG.DVF: V1.11
+   f13_bmx.ti: V1.02
+   -: -
+  
+
+Build Tool Information
+ *CC-RL
+   * Version of plug-in(*.dll)
+     V8.14.00.02 [10 Apr 2025]
+   * The Version of the Compiler Package
+     V1.15.01
+  
+ * The version of SMS Assembler
+   V1.00.00.01 [29 May 2020]
+ 
+
+Debug Tool Information
+ *RL78 E2 Lite
+  Debugger Library V8.14.00.02 [08 May 2025]
+  
+
+Other Tool Information
+ *None
+
+ *None
+
+ *None
+
+ *Pin Configurator
+ *None
+
+ *None
+
+ *None
+
+

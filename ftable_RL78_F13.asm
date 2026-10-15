@@ -23,17 +23,17 @@ $INCLUDE "app_irq_table.inc"
          .DB4   CAN_RESPONSE_ID
          .DB4   MCU_PART_0
          .DB4   MCU_PART_1
-         .DB4   0x00000000
-         .DB4   0x00000000
+         .DB4   MCU_PART_2
+         .DB4   MCU_PART_3
          .DB4   MCU_FAMILY_0
          .DB4   MCU_FAMILY_1
-         .DB4   0x00000000
+         .DB4   MCU_FAMILY_2
          .DB4   MINIMUM_IMAGE_SIZE
 ; Common UPD1 policy: version1/size32/DEVICE_APP/CAN, fixed IRQ ABI/min boot.
          .DB4   0x31445055
-         .DB4   0x01012001
-         .DB4   0x31563146
-         .DB4   0x00010500
+         .DB4   IMAGE_POLICY_WORD
+         .DB4   IMAGE_IRQ_ABI
+         .DB4   IMAGE_MIN_BOOT_VERSION
          .DB4   0x00000000
          .DB4   0x00000000
          .DB4   0x00000000

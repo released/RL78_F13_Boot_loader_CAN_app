@@ -16,6 +16,10 @@ param(
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version 2.0
 
+# Reject stale/tampered generated inputs before using any old linker output.
+& (Join-Path $PSScriptRoot '..\RL78_F13_Boot_loader_CAN\generate_irq_contract.ps1') `
+    -Mode App -AppProject $PSScriptRoot -CheckOnly
+
 $tableConfigPath = Join-Path $PSScriptRoot 'ftable.inc'
 $tableConfigText = [IO.File]::ReadAllText($tableConfigPath)
 function Get-EquValue {
@@ -43,7 +47,7 @@ $ExpectedManifestFormat = 6
 $ExpectedManifestLength = 128
 $MetadataRegionSize = Get-EquValue 'IMAGE_METADATA_REGION_SIZE'
 if ($MetadataRegionSize -ne 256) { throw 'Metadata Flash region must be256 bytes.' }
-$ExpectedTargetId = 0xF13B
+$ExpectedTargetId = (Get-EquValue 'IMAGE_MANIFEST_TARGET') -band 0xFFFF
 
 function Read-IntelHex {
     param([Parameter(Mandatory = $true)][string]$Path)
@@ -285,9 +289,9 @@ $manifestCapacity = [BitConverter]::ToUInt32($appImage, $manifestOffset + 32)
 $manifestCodeFlash = [BitConverter]::ToUInt32($appImage, $manifestOffset + 36)
 $manifestMinimumSize = [BitConverter]::ToUInt32($appImage, $manifestOffset + 92)
 if ([BitConverter]::ToUInt32($appImage,$manifestOffset+96) -ne 0x31445055 -or
-    [BitConverter]::ToUInt32($appImage,$manifestOffset+100) -ne 0x01012001 -or
-    [BitConverter]::ToUInt32($appImage,$manifestOffset+104) -ne 0x31563146 -or
-    [BitConverter]::ToUInt32($appImage,$manifestOffset+108) -gt 0x00010500) {
+    [BitConverter]::ToUInt32($appImage,$manifestOffset+100) -ne (Get-EquValue 'IMAGE_POLICY_WORD') -or
+    [BitConverter]::ToUInt32($appImage,$manifestOffset+104) -ne (Get-EquValue 'IMAGE_IRQ_ABI') -or
+    [BitConverter]::ToUInt32($appImage,$manifestOffset+108) -ne (Get-EquValue 'IMAGE_MIN_BOOT_VERSION')) {
     throw 'Image policy must target DEVICE_APP via CAN with the fixed F13 IRQ ABI.'
 }
 for ($i=112; $i -lt 128; $i++) {
@@ -323,6 +327,52 @@ if (($manifestImageSize -ne [uint32]::MaxValue) -and
 }
 if ($manifestVersion -eq [uint32]::MaxValue) {
     throw "The application image version is not initialized."
+}
+if ($manifestVersion -ne (Get-EquValue 'APP_IMAGE_VERSION') -or
+    $manifestBuild -ne (Get-EquValue 'APP_IMAGE_BUILD')) {
+    throw 'Compiled App metadata is stale relative to app_image.json. Clean rebuild the App.'
+}
+
+# Resolve the compiled table against this App's own JSON and linker symbols.
+# This guard needs only the App map; no rebuilt Boot map is required.
+$symbols = @{}
+$mapText = [IO.File]::ReadAllText($mapPath)
+foreach ($match in [regex]::Matches($mapText,
+    '(?m)^  (\S+)\s*\r?\n\s+([0-9a-fA-F]{8})\s+([0-9a-fA-F]+)\s+(?:func|none|entry)\b')) {
+    $symbols[$match.Groups[1].Value] = @(
+        [Convert]::ToUInt32($match.Groups[2].Value,16),
+        [Convert]::ToUInt32($match.Groups[3].Value,16))
+}
+$handlers = [IO.File]::ReadAllText((Join-Path $PSScriptRoot 'app_irq_handlers.json')) | ConvertFrom-Json
+$irqMap = @{}
+foreach ($property in $handlers.PSObject.Properties) {
+    $irqMap[[Convert]::ToInt32($property.Name.Substring(2),16)] = '_'+[string]$property.Value
+}
+for ($vector=0; $vector -lt 128; $vector+=2) {
+    $offset = $vector*2
+    if ($vector -eq 2) {
+        if ([BitConverter]::ToUInt32($appImage,$offset) -ne [uint32]::MaxValue) {
+            throw 'Reserved App vector slot 02 must stay FF.'
+        }
+        continue
+    }
+    $symbol = if ($vector -eq 0) {'_start'} elseif ($vector -eq 126) {'f13_app_default_brk'} `
+        elseif ($irqMap.ContainsKey($vector)) {$irqMap[$vector]} else {'f13_app_default_isr'}
+    if (!$symbols.ContainsKey($symbol)) { throw "Missing compiled App symbol: $symbol" }
+    $address = [uint32]$symbols[$symbol][0]
+    $branch = [uint32]$appImage[$offset+1] -bor ([uint32]$appImage[$offset+2] -shl 8) -bor ([uint32]$appImage[$offset+3] -shl 16)
+    if ($appImage[$offset] -ne 0xEC -or $branch -ne $address -or
+        $address -lt $AppStart+0x200 -or $address -ge $CrcAddress) {
+        throw "Compiled App IRQ table is stale or invalid at vector $vector. Clean rebuild the App."
+    }
+    if ($irqMap.ContainsKey($vector)) {
+        $size = [uint32]$symbols[$symbol][1]
+        $last = $address-$AppStart+$size-2
+        if ($size -lt 2 -or $last+1 -ge $appImage.Length -or
+            $appImage[$last] -ne 0x61 -or $appImage[$last+1] -ne 0xFC) {
+            throw "Compiled App handler must end in RETI: $symbol"
+        }
+    }
 }
 
 $crcOffset = $appImage.Length - 4

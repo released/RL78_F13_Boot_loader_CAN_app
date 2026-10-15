@@ -1,0 +1,7 @@
+{
+  "version": "0x00010500",
+  "build": 20261015,
+  "target": "0xF13B",
+  "role": "DEVICE_APP",
+  "transport": "CAN"
+}

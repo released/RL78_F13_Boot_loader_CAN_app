@@ -27,10 +27,20 @@ not links to project sources.
 
 ## App-only IRQ extension
 
+User-editable inputs are app_image.json (version/build plus fixed target/role/
+transport) and app_irq_handlers.json (vector/handler). The pre-build generator
+produces ftable.inc, app_identity.h and app_irq_table.inc. Do not hand-edit the
+generated files; missing/invalid JSON fails, with no legacy INC fallback.
+Follow the [step-by-step F13/F24 device workshop](https://released.github.io/slide_boot_loader_for_RL78/#device-metadata-vector-workshop).
+
+Post-build rejects stale linked metadata or IRQ tables after a JSON change.
+Regenerate and clean rebuild this App; do not merely rerun the packager on old
+HEX/map output. The App-only metadata/BR/RETI check does not need a Boot map.
+
 Use app_irq_handlers.json to map physical vectors to globally visible normal
 ISRs with #pragma interrupt and no vect=. INTTRJ0 now also returns RETI; no
 ordinary RET callback remains. Pre-build generates app_irq_table.inc and
-app_identity.h (version/build from this app's ftable.inc). Register new sources
+app_identity.h (version/build from this app's app_image.json). Register new sources
 in the app MTPJ, initialize/clear/mask correctly before EI, and build/update
 only app for compatible additions. Boot assembly does not depend on this map.
 Keep unused IRQs masked; default RETI does not acknowledge peripheral causes.
@@ -120,7 +130,7 @@ For reset/interrupt relocation and maintenance, read:
 - [繁體中文指南](https://github.com/released/RL78_F13_Boot_loader_CAN/blob/main/INTERRUPT_VECTOR_GUIDE_zh-TW.md)
 
 Before a release, update the application semantic version and build fields in
-`ftable.inc`. Layout, identity and CAN declarations are taken from the paired
+`app_image.json`, not generated `ftable.inc`. Layout, identity and CAN declarations are taken from the paired
 boot project's `can_boot_config.h`; the post-build script reads the same
 assembly constants and does not keep a separate expected target or image-size
 constant. There is currently no anti-rollback comparison.
