@@ -7,6 +7,9 @@
 #include "misc_config.h"
 #include "custom_func.h"
 #include "can_boot_config.h"
+#include "image_metadata_config.h"
+#include "../RL78_F13_Boot_loader_CAN/image_metadata.h"
+#include "../RL78_F13_Boot_loader_CAN/boot_app_handoff.h"
 #include "../RL78_F13_Boot_loader_CAN/f13_board_support.h"
 #include "RSCANconf/r_rl78_can_drv.h"
 
@@ -54,7 +57,7 @@ volatile unsigned long btn_counter_tick = 0;
 #pragma address (reset_to_bootloader = 0x000FF700)
 volatile unsigned long reset_to_bootloader;
 #pragma address (boot_shared_ram = 0x000FF710)
-volatile unsigned char boot_shared_ram[CAN_BOOT_SHARED_RAM_SIZE];
+volatile unsigned char boot_shared_ram[BOOT_APP_SHARED_RAM_SIZE];
 
 static unsigned char app_launch_via_boot;
 static unsigned char app_after_can_update;
@@ -68,7 +71,7 @@ static unsigned long AppSharedRead32(unsigned char offset)
     unsigned long value;
     unsigned char index;
 
-    if (offset > (CAN_BOOT_SHARED_RAM_SIZE - 4U))
+    if (offset > (BOOT_APP_SHARED_RAM_SIZE - 4U))
     {
         return 0UL;
     }
@@ -85,7 +88,7 @@ static void AppSharedWrite32(unsigned char offset, unsigned long value)
 {
     unsigned char index;
 
-    if (offset > (CAN_BOOT_SHARED_RAM_SIZE - 4U))
+    if (offset > (BOOT_APP_SHARED_RAM_SIZE - 4U))
     {
         return;
     }
@@ -321,17 +324,17 @@ static void CAN_AppSendInfo(unsigned char page)
     status = CAN_BOOT_STATUS_OK;
     if (page == CAN_BOOT_INFO_PAGE_CORE)
     {
-        value = (unsigned long)CAN_BOOT_TARGET_ID |
+        value = (unsigned long)IMAGE_TARGET_ID |
                 ((unsigned long)CAN_BOOT_PROTOCOL_VERSION << 16) |
-                ((unsigned long)CAN_BOOT_IMAGE_FORMAT_VERSION << 24);
+                ((unsigned long)IMAGE_FORMAT_VERSION << 24);
     }
     else if (page == CAN_BOOT_INFO_PAGE_BOOT_VERSION)
     {
-        value = CAN_BOOT_FIRMWARE_VERSION;
+        value = IMAGE_BOOT_VERSION;
     }
     else if (page == CAN_BOOT_INFO_PAGE_BOOT_BUILD)
     {
-        value = CAN_BOOT_FIRMWARE_BUILD;
+        value = IMAGE_BOOT_BUILD;
     }
     else if (page == CAN_BOOT_INFO_PAGE_APP_VERSION)
     {
@@ -343,29 +346,29 @@ static void CAN_AppSendInfo(unsigned char page)
     }
     else if (page == CAN_BOOT_INFO_PAGE_APP_START)
     {
-        value = CAN_BOOT_APPLICATION_START;
+        value = IMAGE_APPLICATION_START;
     }
     else if (page == CAN_BOOT_INFO_PAGE_APP_CAPACITY)
     {
-        value = CAN_BOOT_APPLICATION_CAPACITY;
+        value = IMAGE_APPLICATION_CAPACITY;
     }
     else if (page == CAN_BOOT_INFO_PAGE_CODE_FLASH)
     {
-        value = CAN_BOOT_CODE_FLASH_SIZE;
+        value = IMAGE_CODE_FLASH_SIZE;
     }
     else if (page == CAN_BOOT_INFO_PAGE_BOOT_RESERVED)
     {
-        value = CAN_BOOT_RESERVED_SIZE;
+        value = IMAGE_RESERVED_SIZE;
     }
     else if (page == CAN_BOOT_INFO_PAGE_ERASE_BLOCK)
     {
-        value = CAN_BOOT_ERASE_BLOCK_SIZE;
+        value = IMAGE_ERASE_BLOCK_SIZE;
     }
     else if (page == CAN_BOOT_INFO_PAGE_CAN_CAPS)
     {
         value = (unsigned long)CAN_BOOT_CAN_MODE_CLASSICAL |
                 ((unsigned long)CAN_BOOT_CAN_ID_STANDARD << 8) |
-                ((unsigned long)CAN_BOOT_CHECKSUM_CRC32 << 16) |
+                ((unsigned long)IMAGE_CHECKSUM_CRC32 << 16) |
                 ((unsigned long)CAN_BOOT_PROTOCOL_ID << 24);
     }
     else if (page == CAN_BOOT_INFO_PAGE_NOMINAL_MASK)
@@ -386,50 +389,50 @@ static void CAN_AppSendInfo(unsigned char page)
     }
     else if (page == CAN_BOOT_INFO_PAGE_PART_0)
     {
-        value = CAN_BOOT_MCU_PART_0;
+        value = IMAGE_MCU_PART_0;
     }
     else if (page == CAN_BOOT_INFO_PAGE_PART_1)
     {
-        value = CAN_BOOT_MCU_PART_1;
+        value = IMAGE_MCU_PART_1;
     }
     else if (page == CAN_BOOT_INFO_PAGE_PART_2)
     {
-        value = CAN_BOOT_MCU_PART_2;
+        value = IMAGE_MCU_PART_2;
     }
     else if (page == CAN_BOOT_INFO_PAGE_PART_3)
     {
-        value = CAN_BOOT_MCU_PART_3;
+        value = IMAGE_MCU_PART_3;
     }
     else if (page == CAN_BOOT_INFO_PAGE_FAMILY_0)
     {
-        value = CAN_BOOT_MCU_FAMILY_0;
+        value = IMAGE_MCU_FAMILY_0;
     }
     else if (page == CAN_BOOT_INFO_PAGE_FAMILY_1)
     {
-        value = CAN_BOOT_MCU_FAMILY_1;
+        value = IMAGE_MCU_FAMILY_1;
     }
     else if (page == CAN_BOOT_INFO_PAGE_FAMILY_2)
     {
-        value = CAN_BOOT_MCU_FAMILY_2;
+        value = IMAGE_MCU_FAMILY_2;
     }
     else if (page == CAN_BOOT_INFO_PAGE_APP_IMAGE_SIZE)
     {
-        value = *(__far unsigned long *)(CAN_BOOT_APPLICATION_START +
-                                         CAN_BOOT_MANIFEST_OFFSET +
-                                         CAN_BOOT_MANIFEST_SIZE_OFFSET);
+        ImageMetadataRead32((const unsigned char __far *)(IMAGE_APPLICATION_START +
+            IMAGE_MANIFEST_OFFSET), IMAGE_METADATA_REGION_SIZE, IMAGE_MANIFEST_SIZE_OFFSET, &value);
     }
     else if (page == CAN_BOOT_INFO_PAGE_UPDATE_POLICY)
     {
-        value = CAN_BOOT_POLICY_WORD;
+        value = IMAGE_POLICY_WORD;
     }
     else if (page == CAN_BOOT_INFO_PAGE_VERSION_POLICY)
     {
-        value = 1UL | (*(__far unsigned long *)(CAN_BOOT_APPLICATION_START +
-            CAN_BOOT_MANIFEST_OFFSET + CAN_BOOT_VERSION_CONTROL_OFFSET) << 1);
+        ImageMetadataRead32((const unsigned char __far *)(IMAGE_APPLICATION_START +
+            IMAGE_MANIFEST_OFFSET), IMAGE_METADATA_REGION_SIZE, IMAGE_VERSION_CONTROL_OFFSET, &value);
+        value = 1UL | (value << 1);
     }
     else if (page == CAN_BOOT_INFO_PAGE_IRQ_ABI)
     {
-        value = CAN_BOOT_IRQ_ABI;
+        value = IMAGE_IRQ_ABI;
     }
     else if (page == CAN_BOOT_INFO_PAGE_BLOCK)
     {
@@ -453,7 +456,7 @@ static void CAN_AppSendInfo(unsigned char page)
     }
     else if (page == CAN_BOOT_INFO_PAGE_MIN_IMAGE_SIZE)
     {
-        value = CAN_BOOT_MINIMUM_IMAGE_SIZE;
+        value = IMAGE_MINIMUM_IMAGE_SIZE;
     }
     else
     {
@@ -717,22 +720,22 @@ void RL78_soft_reset(unsigned char flag)
 
 void request_bootloader_update(void)
 {
-    reset_to_bootloader = CAN_BOOT_RESET_TO_BOOT_SIGNATURE;
+    reset_to_bootloader = BOOT_APP_RESET_TO_BOOT_SIGNATURE;
     RL78_soft_reset(1);
 }
 
 void boot_application_started(void)
 {
     app_launch_via_boot =
-        (AppSharedRead32(CAN_BOOT_RAM_HANDOFF_OFFSET) ==
-         CAN_BOOT_HANDOFF_SIGNATURE) ? 1U : 0U;
+        (AppSharedRead32(BOOT_APP_RAM_HANDOFF_OFFSET) ==
+         BOOT_APP_HANDOFF_SIGNATURE) ? 1U : 0U;
     app_after_can_update =
-        (AppSharedRead32(CAN_BOOT_RAM_UPDATE_OFFSET) ==
-         CAN_BOOT_UPDATE_COMPLETE_SIGNATURE) ? 1U : 0U;
-    AppSharedWrite32(CAN_BOOT_RAM_HANDOFF_OFFSET, 0UL);
-    AppSharedWrite32(CAN_BOOT_RAM_UPDATE_OFFSET, 0UL);
-    boot_shared_ram[CAN_BOOT_RAM_OWNER_OFFSET] =
-        CAN_BOOT_RAM_OWNER_APPLICATION;
+        (AppSharedRead32(BOOT_APP_RAM_UPDATE_OFFSET) ==
+         BOOT_APP_UPDATE_COMPLETE_SIGNATURE) ? 1U : 0U;
+    AppSharedWrite32(BOOT_APP_RAM_HANDOFF_OFFSET, 0UL);
+    AppSharedWrite32(BOOT_APP_RAM_UPDATE_OFFSET, 0UL);
+    boot_shared_ram[BOOT_APP_RAM_OWNER_OFFSET] =
+        BOOT_APP_RAM_OWNER_APPLICATION;
 }
 
 // retarget printf

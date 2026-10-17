@@ -45,6 +45,12 @@
       <TreeImageGuid>03cad1e8-2eb3-4cde-a8a3-982423631122</TreeImageGuid>
       <ParentItem>e75d31df-ef3c-4ec9-9730-035fd2975de6</ParentItem>
     </Instance>
+    <Instance Guid="f1310000-2026-4017-8002-000000000001"><Name>image_metadata.c</Name><Type>File</Type><RelativePath>..\RL78_F13_Boot_loader_CAN\image_metadata.c</RelativePath><TreeImageGuid>941832c1-fc3b-4e1b-94e8-01ea17128b42</TreeImageGuid><ParentItem>e75d31df-ef3c-4ec9-9730-035fd2975de6</ParentItem></Instance>
+    <Instance Guid="f1310000-2026-4017-8002-000000000002"><Name>image_metadata.h</Name><Type>File</Type><RelativePath>..\RL78_F13_Boot_loader_CAN\image_metadata.h</RelativePath><TreeImageGuid>03cad1e8-2eb3-4cde-a8a3-982423631122</TreeImageGuid><ParentItem>e75d31df-ef3c-4ec9-9730-035fd2975de6</ParentItem></Instance>
+    <Instance Guid="f1310000-2026-4017-8002-000000000003"><Name>image_metadata_profile.c</Name><Type>File</Type><RelativePath>..\RL78_F13_Boot_loader_CAN\image_metadata_profile.c</RelativePath><TreeImageGuid>941832c1-fc3b-4e1b-94e8-01ea17128b42</TreeImageGuid><ParentItem>e75d31df-ef3c-4ec9-9730-035fd2975de6</ParentItem></Instance>
+    <Instance Guid="f1310000-2026-4017-8001-000000000001"><Name>image_metadata_config.h</Name><Type>File</Type><RelativePath>image_metadata_config.h</RelativePath><TreeImageGuid>03cad1e8-2eb3-4cde-a8a3-982423631122</TreeImageGuid><ParentItem>e75d31df-ef3c-4ec9-9730-035fd2975de6</ParentItem></Instance>
+    <Instance Guid="f1310000-2026-4017-8001-000000000002"><Name>can_boot_config.h</Name><Type>File</Type><RelativePath>can_boot_config.h</RelativePath><TreeImageGuid>03cad1e8-2eb3-4cde-a8a3-982423631122</TreeImageGuid><ParentItem>e75d31df-ef3c-4ec9-9730-035fd2975de6</ParentItem></Instance>
+    <Instance Guid="f1310000-2026-4017-8001-000000000003"><Name>boot_app_handoff.h</Name><Type>File</Type><RelativePath>..\RL78_F13_Boot_loader_CAN\boot_app_handoff.h</RelativePath><TreeImageGuid>03cad1e8-2eb3-4cde-a8a3-982423631122</TreeImageGuid><ParentItem>e75d31df-ef3c-4ec9-9730-035fd2975de6</ParentItem></Instance>
     <Instance Guid="f1310000-2026-4017-8000-000000000001">
       <Name>app_image_config.h</Name>
       <Type>File</Type>

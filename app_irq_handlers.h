@@ -5,7 +5,7 @@
  * Change this list only when adding/removing a real App ISR.
  * Address source: this MCU's iodefine.h INTxxx definitions and hardware manual
  * interrupt-vector table; the number is not a CAN port or an IRQ ordinal.
- * App slot address = CAN_BOOT_APPLICATION_START + vector * 2.
+ * App slot address = IMAGE_APPLICATION_START + vector * 2.
  * Each handler needs one global #pragma interrupt without vect=, returns RETI,
  * and its C source must be registered in this App's MTPJ.
  * Initialize/clear the peripheral cause before enabling an IRQ. Keep unused

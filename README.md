@@ -30,6 +30,13 @@ User-editable inputs are app_image_config.h (version/build plus fixed target/rol
 transport) and app_irq_handlers.h (vector/handler). The pre-build generator
 produces ftable.inc, app_identity.h and app_irq_table.inc. Do not hand-edit the
 generated files. Missing or invalid C configuration headers stop generation.
+The local image_metadata_config.h forwards the paired Boot's IMAGE_* contract
+and generated App identity. Shared image format/MCU/Flash/policy belong to that
+Boot header; CAN settings belong to can_boot_config.h, and no-init RAM markers
+to boot_app_handoff.h. An App release does not duplicate those shared values.
+App INFO reads metadata fields through the independently compiled
+image_metadata.c/.h. The same module supplies Boot validation, with project
+values in image_metadata_profile.c; decoding alone does not validate CRC.
 Follow the [step-by-step F13/F24 device workshop](https://released.github.io/slide_boot_loader_for_RL78/#device-metadata-vector-workshop).
 
 Post-build rejects stale linked metadata or IRQ tables after a C header change.
@@ -129,8 +136,9 @@ For reset/interrupt relocation and maintenance, read:
 - [繁體中文指南](https://github.com/released/RL78_F13_Boot_loader_CAN/blob/main/INTERRUPT_VECTOR_GUIDE_zh-TW.md)
 
 Before a release, update the application semantic version and build fields in
-`app_image_config.h`, not generated `ftable.inc`. Layout, identity and CAN declarations are taken from the paired
-boot project's `can_boot_config.h`; the post-build script reads the same
+`app_image_config.h`, not generated `ftable.inc`. Layout/identity declarations
+come from the paired Boot's `image_metadata_config.h`, CAN parameters from
+`can_boot_config.h`; the post-build script reads the same
 assembly constants and does not keep a separate expected target or image-size
 constant. APP_IMAGE_VERSION_CONTROL defaults to0;1 enables installed-App
 same/newer checks on ordinary updates. Boot and App versions/builds are

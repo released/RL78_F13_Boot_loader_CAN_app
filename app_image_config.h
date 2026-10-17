@@ -3,7 +3,8 @@
 
 /* User-editable image identity; clean rebuild App after any change.
  * Use integer literals, optional U/UL and one pair of parentheses.
- * Geometry, CAN routing, IRQ ABI and minimum Boot come from can_boot_config.h.
+ * Image format, MCU/Flash, IRQ ABI and minimum Boot: image_metadata_config.h.
+ * CAN routing/rates: can_boot_config.h; RAM handoff: boot_app_handoff.h.
  * Generated ftable.inc/app_identity.h are outputs, not editing inputs.
  * Full field/address/build guide:
  * https://released.github.io/slide_boot_loader_for_RL78/#device-app-config
@@ -11,7 +12,7 @@
 
 /* Change for an App release: 0x00MMmmpp = major.minor.patch (one byte each).
  * Example: 0x00010601UL means 1.6.1; not decimal digits or a build date.
- * Independent of CAN_BOOT_FIRMWARE_VERSION: App 2.1.0 can use Boot 1.7.0.
+ * Independent of IMAGE_BOOT_VERSION: App 2.1.0 can use Boot 1.7.0.
  * Only major/minor/patch are compared for downgrade checks, not the build.
  * Valid range: 0x00000000..0x00FFFFFF. Use VERSION_CONTROL to select policy.
  */
@@ -19,12 +20,12 @@
 
 /* Change for build identification; YYYYMMDD is a convention, not a clock.
  * Example: 20261018UL identifies another build of the same App version.
- * Range: 0..4294967294; this is not compared with CAN_BOOT_FIRMWARE_BUILD.
+ * Range: 0..4294967294; this is not compared with IMAGE_BOOT_BUILD.
  * A later build date does not make a lower App version a permitted upgrade.
  */
 #define APP_IMAGE_BUILD             (20261017UL)
 
-/* Identity check, not MCU selection: keep equal to paired CAN_BOOT_TARGET_ID.
+/* Identity check, not MCU selection: keep equal to paired IMAGE_TARGET_ID.
  * Example: 0xF13BU selects this contract; 0xF33BU fails pre-build validation.
  * Changing a literal does not port the project to another MCU. A real port
  * also supplies the matching Boot, linker/Flash/board/IRQ and Tool contract.
