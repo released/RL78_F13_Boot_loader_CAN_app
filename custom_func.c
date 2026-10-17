@@ -16,6 +16,9 @@
 
 /*_____ D E C L A R A T I O N S ____________________________________________*/
 static unsigned char g_can_app_ready;
+static unsigned char g_app_init_complete;
+static volatile unsigned char g_app_timer_seen;
+static unsigned char g_app_reset_source;
 
 volatile struct flag_32bit flag_PROJ_CTL;
 #define FLAG_PROJ_TIMER_PERIOD_1000MS                 	(flag_PROJ_CTL.bit0)
@@ -175,6 +178,7 @@ void delay_ms(unsigned long ms)
 
 void Timer_1ms_IRQ(void)
 {
+    g_app_timer_seen = 1U;
     tick_counter();
 
     if ((get_tick() % 1000) == 0)
@@ -418,6 +422,11 @@ static void CAN_AppSendInfo(unsigned char page)
     {
         value = CAN_BOOT_POLICY_WORD;
     }
+    else if (page == CAN_BOOT_INFO_PAGE_VERSION_POLICY)
+    {
+        value = 1UL | (*(__far unsigned long *)(CAN_BOOT_APPLICATION_START +
+            CAN_BOOT_MANIFEST_OFFSET + CAN_BOOT_VERSION_CONTROL_OFFSET) << 1);
+    }
     else if (page == CAN_BOOT_INFO_PAGE_IRQ_ABI)
     {
         value = CAN_BOOT_IRQ_ABI;
@@ -425,6 +434,22 @@ static void CAN_AppSendInfo(unsigned char page)
     else if (page == CAN_BOOT_INFO_PAGE_BLOCK)
     {
         value = CAN_BOOT_BLOCK_INFO;
+    }
+    else if (page == CAN_BOOT_INFO_PAGE_DIAGNOSTICS)
+    {
+        value = 1UL; /* APP_READY health; VERIFY belongs to Boot. */
+    }
+    else if (page == CAN_BOOT_INFO_PAGE_HEALTH)
+    {
+        /* READY requires completed initialization, clock/CAN and a real timer IRQ.
+         * Self-test bits cover these local checks only, not external peripherals. */
+        value = ((unsigned long)g_app_reset_source << 24) |
+            ((unsigned long)app_launch_via_boot << 16) |
+            ((unsigned long)app_after_can_update << 17) |
+            ((F13_BoardClockReady() != 0U) ? 0x100UL : 0UL) |
+            ((g_can_app_ready != 0U) ? 0x200UL : 0UL) |
+            ((g_app_timer_seen != 0U) ? 0x400UL : 0UL);
+        if (g_app_init_complete != 0U && (value & 0x700UL) == 0x700UL) value |= 1UL;
     }
     else if (page == CAN_BOOT_INFO_PAGE_MIN_IMAGE_SIZE)
     {
@@ -729,6 +754,7 @@ void hardware_init(void)
     unsigned char can_initialized;
     unsigned char clock_status;
 
+    g_app_reset_source = RESF;
     clock_status = F13_BoardClockStart();
     // const unsigned char indicator[] = "hardware_init";
     EI();   //BSP_EI();
@@ -752,5 +778,6 @@ void hardware_init(void)
     {
         printf("CAN initialization failed\r\n");
     }
+    g_app_init_complete = 1U;
     //printf("%s finish\r\n\r\n",indicator);
 }

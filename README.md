@@ -3,11 +3,10 @@
 Boot-aware application for RL78/F13 R5F10BMG, paired with
 `..\RL78_F13_Boot_loader_CAN`.
 
-First engineering delivery: keep App1.5.0,19244B/CRC CA0DF55C with matching
-Boot1.5.0 and Tool0082/F24App1.5.0. User log182253 confirms301 block ACKs,
-10963ms and matching END; it does not contain new post-reset App UART proof.
-See the [CAN operating guide](https://released.github.io/slide_isp_tool_for_RL78/)
-for initial combined HEX versus subsequent CAN BIN use and validation limits.
+App health INFO1B reports APP_READY only after initialization, clock/CAN and
+an observed timer IRQ. It also reports Boot handoff/update provenance and RESF.
+Tool checks live identity/version/build/size after END; this is distinct from
+the Boot's full-image CRC. See [confirmation and diagnostics](https://released.github.io/slide_isp_tool_for_RL78/#update-confirmation).
 
 Start with the [RL78 Boot/App porting guide (zh-TW)](https://released.github.io/slide_boot_loader_for_RL78/#boot-app-porting)
 for the complete startup/linker/IRQ/build/installation workflow.
@@ -27,20 +26,20 @@ not links to project sources.
 
 ## App-only IRQ extension
 
-User-editable inputs are app_image.json (version/build plus fixed target/role/
-transport) and app_irq_handlers.json (vector/handler). The pre-build generator
+User-editable inputs are app_image_config.h (version/build plus fixed target/role/
+transport) and app_irq_handlers.h (vector/handler). The pre-build generator
 produces ftable.inc, app_identity.h and app_irq_table.inc. Do not hand-edit the
-generated files; missing/invalid JSON fails, with no legacy INC fallback.
+generated files. Missing or invalid C configuration headers stop generation.
 Follow the [step-by-step F13/F24 device workshop](https://released.github.io/slide_boot_loader_for_RL78/#device-metadata-vector-workshop).
 
-Post-build rejects stale linked metadata or IRQ tables after a JSON change.
+Post-build rejects stale linked metadata or IRQ tables after a C header change.
 Regenerate and clean rebuild this App; do not merely rerun the packager on old
 HEX/map output. The App-only metadata/BR/RETI check does not need a Boot map.
 
-Use app_irq_handlers.json to map physical vectors to globally visible normal
-ISRs with #pragma interrupt and no vect=. INTTRJ0 now also returns RETI; no
-ordinary RET callback remains. Pre-build generates app_irq_table.inc and
-app_identity.h (version/build from this app's app_image.json). Register new sources
+Use app_irq_handlers.h to map physical vectors to globally visible normal
+ISRs with #pragma interrupt and no vect=. Each normal ISR returns RETI.
+Pre-build generates app_irq_table.inc and
+app_identity.h (version/build from this app's app_image_config.h). Register new sources
 in the app MTPJ, initialize/clear/mask correctly before EI, and build/update
 only app for compatible additions. Boot assembly does not depend on this map.
 Keep unused IRQs masked; default RETI does not acknowledge peripheral causes.
@@ -104,7 +103,7 @@ timing/filter RAM. Failed clock/CAN initialization leaves S HIGH and disables
 request processing. The app prints clock status, CAN result/IDs and S level.
 UART and TMRJ0 retain their existing CPU32 divisors and shared vectors.
 
-This paired boot/app release is1.5.0 (format6 / CAN v5). Initially program the newly generated
+The image uses format6 / CAN v5. Initially program the generated
 `boot_app.hex` to avoid combining the new boot with a previous HOCO-only app.
 For analyzer discovery send standard `0x700`, DLC2, `07 00`; a running app
 responds on `0x701`, DLC8, INFO page0 with state=application. Tool workflow is
@@ -130,14 +129,16 @@ For reset/interrupt relocation and maintenance, read:
 - [繁體中文指南](https://github.com/released/RL78_F13_Boot_loader_CAN/blob/main/INTERRUPT_VECTOR_GUIDE_zh-TW.md)
 
 Before a release, update the application semantic version and build fields in
-`app_image.json`, not generated `ftable.inc`. Layout, identity and CAN declarations are taken from the paired
+`app_image_config.h`, not generated `ftable.inc`. Layout, identity and CAN declarations are taken from the paired
 boot project's `can_boot_config.h`; the post-build script reads the same
 assembly constants and does not keep a separate expected target or image-size
-constant. There is currently no anti-rollback comparison.
+constant. APP_IMAGE_VERSION_CONTROL defaults to0;1 enables installed-App
+same/newer checks on ordinary updates. Boot and App versions/builds are
+independent. See the [version policy and maintenance operation](https://released.github.io/slide_isp_tool_for_RL78/#force-old-version).
 
-The first-release security policy is CRC-only integrity validation. It does not
-provide authenticity: firmware signatures and anti-rollback are intentionally
-out of scope. The PC validates target, format, size, manifest and CRC before
+CRC provides integrity, not authenticity. Version ordering and the public
+maintenance confirmation are not cryptographic authentication. The PC validates
+target, format, size, manifest and CRC before
 START; the boot loader validates the manifest and the full application CRC on
 every boot and remains in boot mode when validation fails. A partial update or
 power loss therefore cannot jump into an incomplete application.
@@ -169,8 +170,15 @@ capacity and agree with the boot project's flash geometry.
 | --- | ---: | --- |
 | `DefaultBuild\RL78_F13_Boot_loader_CAN_app_update.bin` | Metadata-defined, 4-byte aligned | CAN update image |
 | `DefaultBuild\flash_app_variable_CRC.hex` | Metadata-defined app range | CRC-protected app HEX |
+| `DefaultBuild\app_build_report.html` | Offline HTML | Actual BIN metadata/CRC/SHA-256, byte addresses and full App vector table |
 | `boot_app.hex` | 128 KiB address image | Initial boot + app programming |
 | `boot_app.bin` | 131,072 | Combined binary image |
+
+Git distribution retains only the update BIN in DefaultBuild. Build report,
+map and app-only HEX files are generated locally by a clean build. The Tool's
+[publication workflow](https://github.com/released/simple_renesas_isp_tool/blob/main/docs/GITHUB_PUBLISH_zh-TW.md)
+archives other DefaultBuild files; root boot_app.hex/bin remain available for
+initial installation.
 
 The generator removes known obsolete fixed-range output names so an old
 122,880-byte format-2 BIN or format3 BIN cannot be mistaken for the current format6 image.

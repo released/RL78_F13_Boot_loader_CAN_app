@@ -1,4 +1,4 @@
-; Generated from this app's app_irq_handlers.json. Do not edit.
+; Generated from this app's app_irq_handlers.h. Do not edit.
 .EXTERN _start
 .EXTERN _r_intc0_interrupt
 .EXTERN _r_tmr_rj0_interrupt

@@ -15,6 +15,8 @@ param(
 
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version 2.0
+. (Join-Path $PSScriptRoot '..\RL78_F13_Boot_loader_CAN\app_config.ps1')
+. (Join-Path $PSScriptRoot '..\RL78_F13_Boot_loader_CAN\app_build_report.ps1')
 
 # Reject stale/tampered generated inputs before using any old linker output.
 & (Join-Path $PSScriptRoot '..\RL78_F13_Boot_loader_CAN\generate_irq_contract.ps1') `
@@ -42,7 +44,7 @@ $MaximumAppLength = Get-EquValue 'APP_REGION_SIZE'
 $FlashEndExclusive = Get-EquValue 'CODE_FLASH_SIZE'
 $MinimumAppLength = Get-EquValue 'MINIMUM_IMAGE_SIZE'
 $ManifestAddress = $AppStart + 0x100
-$ExpectedManifestMagic = [uint32]0x334E4143
+$ExpectedManifestMagic = [uint32](Get-EquValue 'IMAGE_MANIFEST_MAGIC')
 $ExpectedManifestFormat = 6
 $ExpectedManifestLength = 128
 $MetadataRegionSize = Get-EquValue 'IMAGE_METADATA_REGION_SIZE'
@@ -294,7 +296,11 @@ if ([BitConverter]::ToUInt32($appImage,$manifestOffset+96) -ne 0x31445055 -or
     [BitConverter]::ToUInt32($appImage,$manifestOffset+108) -ne (Get-EquValue 'IMAGE_MIN_BOOT_VERSION')) {
     throw 'Image policy must target DEVICE_APP via CAN with the fixed F13 IRQ ABI.'
 }
+if ([BitConverter]::ToUInt32($appImage,$manifestOffset+116) -ne (Get-EquValue 'APP_IMAGE_VERSION_CONTROL')) {
+    throw 'Compiled version control differs from App header. Clean rebuild.'
+}
 for ($i=112; $i -lt 128; $i++) {
+    if ($i -ge 116 -and $i -lt 120) { continue }
     if ($appImage[$manifestOffset+$i] -ne 0) { throw 'Unknown policy extension.' }
 }
 
@@ -330,10 +336,10 @@ if ($manifestVersion -eq [uint32]::MaxValue) {
 }
 if ($manifestVersion -ne (Get-EquValue 'APP_IMAGE_VERSION') -or
     $manifestBuild -ne (Get-EquValue 'APP_IMAGE_BUILD')) {
-    throw 'Compiled App metadata is stale relative to app_image.json. Clean rebuild the App.'
+    throw 'Compiled App metadata is stale relative to app_image_config.h. Clean rebuild the App.'
 }
 
-# Resolve the compiled table against this App's own JSON and linker symbols.
+# Resolve the compiled table against this App's own header and linker symbols.
 # This guard needs only the App map; no rebuilt Boot map is required.
 $symbols = @{}
 $mapText = [IO.File]::ReadAllText($mapPath)
@@ -343,10 +349,10 @@ foreach ($match in [regex]::Matches($mapText,
         [Convert]::ToUInt32($match.Groups[2].Value,16),
         [Convert]::ToUInt32($match.Groups[3].Value,16))
 }
-$handlers = [IO.File]::ReadAllText((Join-Path $PSScriptRoot 'app_irq_handlers.json')) | ConvertFrom-Json
+$handlers = Read-AppIrqConfig $PSScriptRoot
 $irqMap = @{}
-foreach ($property in $handlers.PSObject.Properties) {
-    $irqMap[[Convert]::ToInt32($property.Name.Substring(2),16)] = '_'+[string]$property.Value
+foreach ($vector in $handlers.Keys) {
+    $irqMap[$vector] = '_'+[string]$handlers[$vector]
 }
 for ($vector=0; $vector -lt 128; $vector+=2) {
     $offset = $vector*2
@@ -411,6 +417,8 @@ if (Test-Path -LiteralPath $bootHexPath) {
     [IO.File]::WriteAllBytes((Join-Path $projectDirectory "boot_app.bin"), $combined)
     Write-IntelHex -Path (Join-Path $projectDirectory "boot_app.hex") -StartAddress 0 -Data $combined
 }
+
+Write-AppBuildReport -Project $PSScriptRoot -ImagePath $updateBinPath
 
 Write-Host ("Generated {0} bytes; linked end = 0x{1:X5}; CRC address = 0x{2:X5}; target = 0x{3:X4}; version = 0x{4:X8}; build = {5}; app start = 0x{6:X}; capacity = 0x{7:X}; CRC32 = 0x{8:X8}" -f `
     $appImage.Length, $linkedEnd, $CrcAddress, $manifestTargetId,

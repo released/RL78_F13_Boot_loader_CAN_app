@@ -29,13 +29,13 @@ $INCLUDE "app_irq_table.inc"
          .DB4   MCU_FAMILY_1
          .DB4   MCU_FAMILY_2
          .DB4   MINIMUM_IMAGE_SIZE
-; Common UPD1 policy: version1/size32/DEVICE_APP/CAN, fixed IRQ ABI/min boot.
+; Common UPD1 policy: version3/size32/DEVICE_APP/CAN; version control at +0x74.
          .DB4   0x31445055
          .DB4   IMAGE_POLICY_WORD
          .DB4   IMAGE_IRQ_ABI
          .DB4   IMAGE_MIN_BOOT_VERSION
          .DB4   0x00000000
-         .DB4   0x00000000
+         .DB4   APP_IMAGE_VERSION_CONTROL
          .DB4   0x00000000
          .DB4   0x00000000
 ; Remaining128 bytes must stay erased.

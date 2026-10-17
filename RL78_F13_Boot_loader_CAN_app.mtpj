@@ -45,6 +45,20 @@
       <TreeImageGuid>03cad1e8-2eb3-4cde-a8a3-982423631122</TreeImageGuid>
       <ParentItem>e75d31df-ef3c-4ec9-9730-035fd2975de6</ParentItem>
     </Instance>
+    <Instance Guid="f1310000-2026-4017-8000-000000000001">
+      <Name>app_image_config.h</Name>
+      <Type>File</Type>
+      <RelativePath>app_image_config.h</RelativePath>
+      <TreeImageGuid>03cad1e8-2eb3-4cde-a8a3-982423631122</TreeImageGuid>
+      <ParentItem>e75d31df-ef3c-4ec9-9730-035fd2975de6</ParentItem>
+    </Instance>
+    <Instance Guid="f1310000-2026-4017-8000-000000000002">
+      <Name>app_irq_handlers.h</Name>
+      <Type>File</Type>
+      <RelativePath>app_irq_handlers.h</RelativePath>
+      <TreeImageGuid>03cad1e8-2eb3-4cde-a8a3-982423631122</TreeImageGuid>
+      <ParentItem>e75d31df-ef3c-4ec9-9730-035fd2975de6</ParentItem>
+    </Instance>
     <Instance Guid="6948a5c7-477a-4ac3-9004-951cf9d47f13">
       <Name>Code Generator</Name>
       <Type>Category</Type>

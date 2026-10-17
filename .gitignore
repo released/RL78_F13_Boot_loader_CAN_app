@@ -1,0 +1,6 @@
+# Keep only the CAN update delivery in DefaultBuild.
+/DefaultBuild/*
+!/DefaultBuild/RL78_F13_Boot_loader_CAN_app_update.bin
+/tmp/
+*.mtud
+QualityReport*.txt
