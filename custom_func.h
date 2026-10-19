@@ -54,7 +54,8 @@
 /*_____ D E F I N I T I O N S ______________________________________________*/
 
 /* Change this short tag when preparing an app image for update verification. */
-#define APP_RUNTIME_LOG_TAG  "V2"
+#define APP_RUNTIME_LOG_TAG  "V1"
+// #define APP_RUNTIME_LOG_TAG  "V2"
 
 /*_____ M A C R O S ________________________________________________________*/
 
