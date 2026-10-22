@@ -65,7 +65,14 @@ metadata/CRC/CAN INFO-ENTER contract; see the boot project's IRQ guides.
 | `0x2200-linked end` | Application code and linker data |
 | aligned linked end | Optional `0xFF` alignment padding |
 | final four image bytes | CRC32, little-endian |
-| after image end to `0x1FFFF` | Outside the update image |
+| after image end to `0x1FBFF` | Outside the update image |
+| `0x1FC00-0x1FFFF` | Protected final 1-KiB erase block |
+
+**Important: the default App limit is 119 KiB. Using the full 120 KiB
+requires matching Boot/App capacity settings and Boot installation with
+RFP only, not CS+ Debug download.** CS+ places a debug monitor in the tail;
+overwriting it can cause App startup/communication failures even when END
+CRC passes. See [Boot installation and Flash tail protection](https://released.github.io/slide_boot_loader_for_RL78/#device-debug-monitor).
 
 The application table uses `0x2000 + original_vector * 2`. The bootloader owns
 the hardware vectors and dispatches application entries through this table.
@@ -191,6 +198,28 @@ initial installation.
 The generator removes known obsolete fixed-range output names so an old
 122,880-byte format-2 BIN or format3 BIN cannot be mistaken for the current format6 image.
 
+## FF-filled App test images
+
+After a successful App build, double-click `generate_test_bins.bat`, or run
+`powershell -NoProfile -ExecutionPolicy Bypass -File .\generate_test_bins.ps1`
+from this App directory. The matching sibling Boot supplies `app_config.ps1`;
+no Python, SRecord or MCU compiler invocation is needed.
+
+The script reads the packaged `DefaultBuild/*_update.bin` and creates a new
+`test_bins/<batch>/` with test BINs, `manifest.csv` and `skipped.csv`.
+Default Flash budgets are 16/32/64/128/256/512 KiB, including Boot; the actual
+BIN subtracts the Boot reserve and respects metadata capacity. With the current
+App, the generated lengths are 24/56/119 KiB; an App that no longer fits a
+budget is skipped rather than truncated. One KiB is 1024 bytes.
+
+App code and vectors remain unchanged. FF padding starts at the original CRC
+location; metadata image_size at BIN `0x118..0x11B` is updated, and the new final
+four bytes contain little-endian CRC32. Version/build/policy remain unchanged.
+The original BIN is never overwritten. Test outputs are ignored by Git and
+can be regenerated after each App build; both generator scripts are shared.
+Use the existing Tool CAN Upgrade workflow and keep its JSON operation report.
+See the [test-image guide](https://released.github.io/slide_boot_loader_for_RL78/#device-test-images).
+
 ## Debugging with E2 Lite
 
 The app project runs to `_main` and uses `-OCDTR`; normal `.dataR/.bss`
@@ -237,7 +266,7 @@ Commands executed after build**. The project setting is stored as
 - Confirm all normal app sections start at or after `0x2200`.
 - Confirm update BIN length equals the manifest size, is 4-byte aligned, and is
   within the capacity declared by its metadata. For the current R5F10BMG
-  build, that capacity is `0x1E000` bytes; it is not a PC-tool global limit.
+  build, that capacity is `0x1DC00` bytes; it is not a PC-tool global limit.
 - Confirm generated CRC32 equals an independent calculation.
 - Run `scripts\verify_f13_artifacts.ps1` from `simple_renesas_isp_tool` to
   verify boot growth margin, app boundaries, identity/version, manifest/CRC,

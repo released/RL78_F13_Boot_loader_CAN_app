@@ -42,6 +42,7 @@ function Get-EquValue {
 $AppStart = Get-EquValue 'FLASH_TABLE'
 $MaximumAppLength = Get-EquValue 'APP_REGION_SIZE'
 $FlashEndExclusive = Get-EquValue 'CODE_FLASH_SIZE'
+$AppEndExclusive = $AppStart + $MaximumAppLength
 $MinimumAppLength = Get-EquValue 'MINIMUM_IMAGE_SIZE'
 $ManifestAddress = $AppStart + 0x100
 $ExpectedManifestMagic = [uint32](Get-EquValue 'IMAGE_MANIFEST_MAGIC')
@@ -236,7 +237,7 @@ if (-not (Test-Path -LiteralPath $mapPath)) {
 
 $linkedEnd = Get-ApplicationLinkedEnd -Path $mapPath
 if (($linkedEnd -lt ($AppStart + $MinimumAppLength - 4)) -or
-    ($linkedEnd -gt ($FlashEndExclusive - 4))) {
+    ($linkedEnd -gt ($AppEndExclusive - 4))) {
     throw ("Application linked end 0x{0:X5} is outside the supported range." -f $linkedEnd)
 }
 $CrcAddress = [long](($linkedEnd + 3) -band -4)
@@ -404,7 +405,8 @@ Write-IntelHex -Path $updateHexPath -StartAddress $AppStart -Data $appImage
 
 $bootHexPath = Join-Path $projectDirectory "..\RL78_F13_Boot_loader_CAN\DefaultBuild\boot0000_1FFF.hex"
 if (Test-Path -LiteralPath $bootHexPath) {
-    $combined = New-Object byte[] $FlashEndExclusive
+    # Programmer image stops before the protected final erase block.
+    $combined = New-Object byte[] $AppEndExclusive
     for ($i = 0; $i -lt $combined.Length; $i++) { $combined[$i] = 0xFF }
     $bootMemory = Read-IntelHex -Path $bootHexPath
     foreach ($entry in $bootMemory.GetEnumerator()) {

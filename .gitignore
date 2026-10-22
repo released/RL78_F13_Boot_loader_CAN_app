@@ -2,5 +2,6 @@
 /DefaultBuild/*
 !/DefaultBuild/RL78_F13_Boot_loader_CAN_app_update.bin
 /tmp/
+/test_bins/
 *.mtud
 QualityReport*.txt
