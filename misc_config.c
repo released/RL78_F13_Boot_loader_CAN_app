@@ -4,30 +4,31 @@
 /*_____ D E C L A R A T I O N S ____________________________________________*/
 
 struct flag_8bit flag_MISC_CTL;
-#define FLAG_MISC_ERROR                                 (flag_MISC_CTL.bit0)
-#define FLAG_MISC_REVERSE1                 				(flag_MISC_CTL.bit1)
-#define FLAG_MISC_REVERSE2                 				(flag_MISC_CTL.bit2)
-#define FLAG_MISC_REVERSE3                              (flag_MISC_CTL.bit3)
-#define FLAG_MISC_REVERSE4                              (flag_MISC_CTL.bit4)
-#define FLAG_MISC_REVERSE5                              (flag_MISC_CTL.bit5)
-#define FLAG_MISC_REVERSE6                              (flag_MISC_CTL.bit6)
-#define FLAG_MISC_REVERSE7                              (flag_MISC_CTL.bit7)
+#define FLAG_MISC_ERROR (flag_MISC_CTL.bit0)
+#define FLAG_MISC_REVERSE1 (flag_MISC_CTL.bit1)
+#define FLAG_MISC_REVERSE2 (flag_MISC_CTL.bit2)
+#define FLAG_MISC_REVERSE3 (flag_MISC_CTL.bit3)
+#define FLAG_MISC_REVERSE4 (flag_MISC_CTL.bit4)
+#define FLAG_MISC_REVERSE5 (flag_MISC_CTL.bit5)
+#define FLAG_MISC_REVERSE6 (flag_MISC_CTL.bit6)
+#define FLAG_MISC_REVERSE7 (flag_MISC_CTL.bit7)
 
 /*_____ D E F I N I T I O N S ______________________________________________*/
 
-#if defined (ENABLE_TICK_EVENT)
-typedef void (*sys_pvTimeFunPtr)(void);   /* function pointer */
+#if defined(ENABLE_TICK_EVENT)
+typedef void (*sys_pvTimeFunPtr)(void); /* function pointer */
 typedef struct timeEvent_t
 {
-    unsigned char             active;
-    unsigned long       initTick;
-    unsigned long       curTick;
-    sys_pvTimeFunPtr    funPtr;
+    unsigned char active;
+    unsigned long initTick;
+    unsigned long curTick;
+    sys_pvTimeFunPtr funPtr;
 } TimeEvent_T;
 
-#define TICKEVENTCOUNT                                 (8)                   
-volatile  TimeEvent_T tTimerEvent[TICKEVENTCOUNT];
-volatile unsigned char _sys_uTimerEventCount = 0;             /* Speed up interrupt reponse time if no callback function */
+#define TICKEVENTCOUNT (8)
+volatile TimeEvent_T tTimerEvent[TICKEVENTCOUNT];
+volatile unsigned char _sys_uTimerEventCount =
+    0; /* Speed up interrupt reponse time if no callback function */
 #endif
 
 /*_____ M A C R O S ________________________________________________________*/
@@ -36,104 +37,113 @@ volatile unsigned char _sys_uTimerEventCount = 0;             /* Speed up interr
 
 void compare_buffer(unsigned char *src, unsigned char *des, int nBytes)
 {
-    unsigned short  i = 0;	
-	
-    #if 1
+    unsigned short i = 0;
+
+#if 1
     for (i = 0; i < nBytes; i++)
     {
         if (src[i] != des[i])
         {
-            printf("error idx : %4d : 0x%2X , 0x%2X\r\n", i , src[i],des[i]);
-			FLAG_MISC_ERROR = 1;//set_flag(flag_error , ENABLE);
+            printf("error idx : %4d : 0x%2X , 0x%2X\r\n", i, src[i], des[i]);
+            FLAG_MISC_ERROR = 1; // set_flag(flag_error , ENABLE);
         }
     }
 
-	if (!FLAG_MISC_ERROR)//(!is_flag_set(flag_error))
-	{
-    	printf("compare_buffer complete \r\n");	
-	}
+    if (!FLAG_MISC_ERROR) //(!is_flag_set(flag_error))
+    {
+        printf("compare_buffer complete \r\n");
+    }
 
     printf("compare_buffer end \r\n");
-	FLAG_MISC_ERROR = 0;//set_flag(flag_error , DISABLE);	    
-    #else
+    FLAG_MISC_ERROR = 0; // set_flag(flag_error , DISABLE);
+#else
     if (memcmp(src, des, nBytes))
     {
         printf("\nMismatch!! - %d\n", nBytes);
         for (i = 0; i < nBytes; i++)
+        {
             printf("0x%02x    0x%02x\n", src[i], des[i]);
+        }
         return -1;
     }
-    #endif
-
+#endif
 }
 
 void reset_buffer(void *dest, unsigned long val, unsigned long size)
 {
     unsigned char *pu8Dest;
-//    unsigned long i;
-    
+    //    unsigned long i;
+
     pu8Dest = (unsigned char *)dest;
 
-	#if 1
-	while (size-- > 0)
-		*pu8Dest++ = val;
-	#else
-	memset(pu8Dest, val, size * (sizeof(pu8Dest[0]) ));
-	#endif
-	
+#if 1
+    while (size-- > 0)
+    {
+        *pu8Dest++ = val;
+    }
+#else
+    memset(pu8Dest, val, size * (sizeof(pu8Dest[0])));
+#endif
 }
 
 void copy_buffer(void *dest, void *src, unsigned long size)
 {
     unsigned char *pu8Src, *pu8Dest;
     unsigned long i;
-    
+
     pu8Dest = (unsigned char *)dest;
-    pu8Src  = (unsigned char *)src;
+    pu8Src = (unsigned char *)src;
 
-
-	#if 0
+#if 0
 	  while (size--)
 	    *pu8Dest++ = *pu8Src++;
-	#else
+#else
     for (i = 0; i < size; i++)
+    {
         pu8Dest[i] = pu8Src[i];
-	#endif
+    }
+#endif
 }
 
 void dump_buffer(unsigned char *pucBuff, int nBytes)
 {
-    unsigned short  i = 0;
-    
-    printf("dump_buffer : %2d\r\n" , nBytes);    
-    for (i = 0 ; i < nBytes ; i++)
+    unsigned short i = 0;
+
+    printf("dump_buffer : %2d\r\n", nBytes);
+    for (i = 0; i < nBytes; i++)
     {
-        printf("0x%02X," , pucBuff[i]);
-        if ((i+1)%8 ==0)
+        printf("0x%02X,", pucBuff[i]);
+        if ((i + 1) % 8 == 0)
         {
             printf("\r\n");
-        }            
+        }
     }
     printf("\r\n\r\n");
 }
 
 void dump_buffer_hex(unsigned char *pucBuff, int nBytes)
 {
-    int     nIdx, i;
+    int nIdx, i;
 
     nIdx = 0;
     while (nBytes > 0)
     {
         printf("0x%04X  ", nIdx);
         for (i = 0; i < 16; i++)
+        {
             printf("%02X ", pucBuff[nIdx + i]);
+        }
         printf("  ");
         for (i = 0; i < 16; i++)
         {
             if ((pucBuff[nIdx + i] >= 0x20) && (pucBuff[nIdx + i] < 127))
+            {
                 printf("%c", pucBuff[nIdx + i]);
+            }
             else
+            {
                 printf(".");
+            }
             nBytes--;
         }
         nIdx += 16;
@@ -142,21 +152,23 @@ void dump_buffer_hex(unsigned char *pucBuff, int nBytes)
     printf("\n");
 }
 
-#if defined (ENABLE_TICK_EVENT)
+#if defined(ENABLE_TICK_EVENT)
 void TickCallback_processB(void)
 {
-    printf("%s test \r\n" , __FUNCTION__);
+    printf("%s test \r\n", __FUNCTION__);
 }
 
 void TickCallback_processA(void)
 {
-    printf("%s test \r\n" , __FUNCTION__);
+    printf("%s test \r\n", __FUNCTION__);
 }
 
 void TickClearTickEvent(unsigned char u8TimeEventID)
 {
     if (u8TimeEventID > TICKEVENTCOUNT)
+    {
         return;
+    }
 
     if (tTimerEvent[u8TimeEventID].active == TRUE)
     {
@@ -167,7 +179,7 @@ void TickClearTickEvent(unsigned char u8TimeEventID)
 
 signed char TickSetTickEvent(unsigned long uTimeTick, void *pvFun)
 {
-    int  i;
+    int i;
     int u8TimeEventID = 0;
 
     for (i = 0; i < TICKEVENTCOUNT; i++)
@@ -186,11 +198,11 @@ signed char TickSetTickEvent(unsigned long uTimeTick, void *pvFun)
 
     if (i == TICKEVENTCOUNT)
     {
-        return -1;    /* -1 means invalid channel */
+        return -1; /* -1 means invalid channel */
     }
     else
     {
-        return u8TimeEventID;    /* Event ID start from 0*/
+        return u8TimeEventID; /* Event ID start from 0*/
     }
 }
 
@@ -224,9 +236,10 @@ void TickInitTickEvent(void)
 
     /* Remove all callback function */
     for (i = 0; i < TICKEVENTCOUNT; i++)
+    {
         TickClearTickEvent(i);
+    }
 
     _sys_uTimerEventCount = 0;
 }
-#endif 
-
+#endif

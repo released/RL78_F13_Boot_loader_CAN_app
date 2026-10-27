@@ -425,3 +425,9 @@ Write-AppBuildReport -Project $PSScriptRoot -ImagePath $updateBinPath
 Write-Host ("Generated {0} bytes; linked end = 0x{1:X5}; CRC address = 0x{2:X5}; target = 0x{3:X4}; version = 0x{4:X8}; build = {5}; app start = 0x{6:X}; capacity = 0x{7:X}; CRC32 = 0x{8:X8}" -f `
     $appImage.Length, $linkedEnd, $CrcAddress, $manifestTargetId,
     $manifestVersion, $manifestBuild, $manifestAppStart, $manifestCapacity, $crc)
+
+# APP_TIMING_BINS_BEGIN
+$LASTEXITCODE=0
+& (Join-Path $PSScriptRoot 'generate_test_bins.ps1') -ProjectRoot $PSScriptRoot -Automatic
+if($LASTEXITCODE -ne 0){throw 'App timing BIN generation failed.'}
+# APP_TIMING_BINS_END

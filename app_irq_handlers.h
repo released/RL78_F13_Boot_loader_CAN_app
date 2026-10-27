@@ -19,10 +19,10 @@
  * 0x1E = INTTRJ0: timer RJ0, r_tmr_rj0_interrupt.
  * Keep a backslash on every entry except the last when extending the list.
  */
-#define APP_IRQ_HANDLERS(X) \
-    X(0x08, r_intc0_interrupt) \
-    X(0x16, r_uart0_interrupt_send) \
-    X(0x18, r_uart0_interrupt_receive) \
+#define APP_IRQ_HANDLERS(X)                                                                        \
+    X(0x08, r_intc0_interrupt)                                                                     \
+    X(0x16, r_uart0_interrupt_send)                                                                \
+    X(0x18, r_uart0_interrupt_receive)                                                             \
     X(0x1E, r_tmr_rj0_interrupt)
 
 #endif

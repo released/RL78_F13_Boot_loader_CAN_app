@@ -4,4 +4,5 @@
 /tmp/
 /test_bins/
 *.mtud
+*.obj
 QualityReport*.txt

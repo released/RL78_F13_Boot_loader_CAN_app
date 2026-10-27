@@ -16,27 +16,27 @@
  * Only major/minor/patch are compared for downgrade checks, not the build.
  * Valid range: 0x00000000..0x00FFFFFF. Use VERSION_CONTROL to select policy.
  */
-#define APP_IMAGE_VERSION           (0x00010601UL)
+#define APP_IMAGE_VERSION (0x00010601UL)
 
 /* Change for build identification; YYYYMMDD is a convention, not a clock.
  * Example: 20261018UL identifies another build of the same App version.
  * Range: 0..4294967294; this is not compared with IMAGE_BOOT_BUILD.
  * A later build date does not make a lower App version a permitted upgrade.
  */
-#define APP_IMAGE_BUILD             (20261017UL)
+#define APP_IMAGE_BUILD (20261017UL)
 
 /* Identity check, not MCU selection: keep equal to paired IMAGE_TARGET_ID.
  * Example: 0xF13BU selects this contract; 0xF33BU fails pre-build validation.
  * Changing a literal does not port the project to another MCU. A real port
  * also supplies the matching Boot, linker/Flash/board/IRQ and Tool contract.
  */
-#define APP_IMAGE_TARGET_ID         (0xF13BU)
+#define APP_IMAGE_TARGET_ID (0xF13BU)
 
 /* Update destination role: 1U=DEVICE_APP, 2U=HOST_BRIDGE_APP in the protocol.
  * This project requires 1U. Setting 2U or undefined 5U fails pre-build;
  * a role mismatch is also rejected by Tool/Boot before any Flash erase.
  */
-#define APP_IMAGE_ROLE              (1U)    /* DEVICE_APP */
+#define APP_IMAGE_ROLE (1U) /* DEVICE_APP */
 
 /* Allowed update transport bitmask, not App runtime peripheral usage:
  * 0x01U=CAN, 0x02U=I2C, 0x04U=UART; protocol mask 0x03U means CAN|I2C.
@@ -56,6 +56,6 @@
  * No persistent floor: invalid-App recovery has no installed version policy.
  * Values other than 0U/1U fail generation. Clean rebuild after changing this.
  */
-#define APP_IMAGE_VERSION_CONTROL   (0U)
+#define APP_IMAGE_VERSION_CONTROL (0U)
 
 #endif
