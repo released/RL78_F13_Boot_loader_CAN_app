@@ -1,3 +1,8 @@
+/* Project/API reading notes: Editable App release identity.
+ * Version/build identify this App, target/role/transports must match the installed Boot contract,
+ * and version control is disabled by default.
+ * Generated identity/metadata outputs are rebuilt from these inputs; do not edit the BIN by hand.
+ */
 #ifndef APP_IMAGE_CONFIG_H
 #define APP_IMAGE_CONFIG_H
 

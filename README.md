@@ -6,7 +6,7 @@ Boot-aware application for RL78/F13 R5F10BMG, paired with
 App health INFO1B reports APP_READY only after initialization, clock/CAN and
 an observed timer IRQ. It also reports Boot handoff/update provenance and RESF.
 Tool checks live identity/version/build/size after END; this is distinct from
-the Boot's full-image CRC. See [confirmation and diagnostics](https://released.github.io/slide_isp_tool_for_RL78/#update-confirmation).
+the Boot's full-image CRC. See [confirmation and diagnostics](https://released.github.io/slide_simple_renesas_isp_tool/#update-confirmation).
 
 Start with the [RL78 Boot/App porting guide (zh-TW)](https://released.github.io/slide_boot_loader_for_RL78/#boot-app-porting)
 for the complete startup/linker/IRQ/build/installation workflow.
@@ -14,15 +14,11 @@ for the complete startup/linker/IRQ/build/installation workflow.
 ## Public examples and checkout layout
 
 - [CAN Transfer benchmark](https://github.com/released/RL78_F13_CAN_Transfer).
-- [Required sibling Boot project](https://github.com/released/RL78_F13_Boot_loader_CAN).
+- [Matching Boot project](https://github.com/released/RL78_F13_Boot_loader_CAN).
 - [This App project](https://github.com/released/RL78_F13_Boot_loader_CAN_app).
 
-Clone Boot and App into the same parent directory using the exact repository
-names. For Download ZIP, remove the `-main` directory suffix. This App references
-Boot's board sources, CAN configuration and IRQ generator; the App repository
-alone is not a self-contained build. Build Boot before App for initial combined
-HEX generation. Compiler executable paths below are installation examples,
-not links to project sources.
+This App contains its own board sources, CAN configuration and IRQ generator.
+Install a compatible Boot/App pair for the update workflow.
 
 ## App-only IRQ extension
 
@@ -102,7 +98,7 @@ separate evidence for the current boot handoff and update path.
 The app initializes CAN at 500 kbit/s on P1.0/CTXD0 and P1.1/CRXD0, using P1.2
 as the active-low transceiver enable. CAN handling is polling-only.
 
-The shared `../RL78_F13_Boot_loader_CAN/f13_board_support.c/.h` now selects
+The local `hal/device/f13_board_support.c/.h` configures
 the proven Transfer board baseline: X1 4 MHz /2 x16 -> PLL/CPU32, MDIV0,
 CAN16, BRP register1 and 16 TQ -> Classical500K (75% sample point).
 IC2 TJA1050T requires EVDD=4.75-5.25 V; P12 is S/silent-mode control, LOW
@@ -149,7 +145,7 @@ come from the paired Boot's `image_metadata_config.h`, CAN parameters from
 assembly constants and does not keep a separate expected target or image-size
 constant. APP_IMAGE_VERSION_CONTROL defaults to0;1 enables installed-App
 same/newer checks on ordinary updates. Boot and App versions/builds are
-independent. See the [version policy and maintenance operation](https://released.github.io/slide_isp_tool_for_RL78/#force-old-version).
+independent. See the [version policy and maintenance operation](https://released.github.io/slide_simple_renesas_isp_tool/#force-old-version).
 
 CRC provides integrity, not authenticity. Version ordering and the public
 maintenance confirmation are not cryptographic authentication. The PC validates
@@ -276,3 +272,36 @@ these callbacks, retaining the existing communication service calls.
 The selected main/startup adapter owns entry and handoff. Generated peripheral
 files remain under `src/`; retain the project's MTPJ source selection when using
 Code Generator or Smart Configurator, then rebuild to validate the image and vectors.
+
+## Project layout and standalone build
+
+This project includes its own source files, configuration headers and build tools.
+A sibling Boot, App or Transfer checkout is not required to compile it.
+Keep the project directory name aligned with its `.mtpj` filename; remove a ZIP download suffix when necessary.
+Build with CS+ Rebuild, or run the local PowerShell entry:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\build.ps1
+```
+
+| Location | Responsibility |
+| --- | --- |
+| `custom_func.c` | Project initialization in `hardware_init()` and recurring work in `loop()`; runtime orchestration stays here |
+| `hal/can` | CAN service, controller driver and CAN adapter, when used by this project |
+| `hal/device` | Device, clock, peripheral and CPU handoff APIs |
+| `hal/image` | Metadata parser/profile, image validation and software CRC |
+| `hal/flash` | Flash access/geometry APIs, when required by the selected image |
+| `hal/isp` | Update/Transfer protocol and transport processing APIs |
+| Root configuration headers | Local MCU/Flash, handoff and communication contract |
+| `tools` and root PowerShell helpers | Local metadata/IRQ generation and linked-image checks |
+| `src` | Code Generator or Smart Configurator peripheral sources |
+
+Only the sources registered in this project's CS+ configuration are linked.
+Generated main/vector implementations must not become a second active entry.
+Retain the `custom_func.c` callbacks and the selected startup adapter after code generation.
+
+Boot and App each carry a local contract. Keep their MCU, Flash layout, image format,
+IRQ ABI, handoff and communication settings compatible when installing a pair.
+App releases are edited in `app_image_config.h` and `app_irq_handlers.h` in the App project.
+Rebuild the selected App to regenerate its metadata, vector table, update BIN and timing BINs.
+The App build does not read or rewrite a Boot checkout.

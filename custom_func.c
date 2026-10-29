@@ -1,4 +1,9 @@
 /*_____ I N C L U D E S ____________________________________________________*/
+/* Project/API reading notes: Project-owned initialization and foreground work.
+ * The selected main/startup adapter calls hardware_init() once and loop() repeatedly.
+ * Keep application changes here so generated entry sources remain replaceable; lower-level APIs
+ * live in this project's hal directories.
+ */
 #include <stdio.h>
 #include <string.h>
 
@@ -8,14 +13,14 @@
 #include "custom_func.h"
 #include "can_boot_config.h"
 #include "image_metadata_config.h"
-#include "../RL78_F13_Boot_loader_CAN/image_metadata.h"
-#include "../RL78_F13_Boot_loader_CAN/boot_app_handoff.h"
-#include "../RL78_F13_Boot_loader_CAN/f13_board_support.h"
-#include "RSCANconf/r_rl78_can_drv.h"
+#include "image_metadata.h"
+#include "boot_app_handoff.h"
+#include "f13_board_support.h"
+#include "r_rl78_can_drv.h"
 
 /* Compile the same validated polling CAN driver used by the boot loader. */
-#include "RSCANconf/RSCANlite.c"
-#include "RSCANconf/r_rl78_can_drv.c"
+#include "RSCANlite.c"
+#include "r_rl78_can_drv.c"
 
 /*_____ D E C L A R A T I O N S ____________________________________________*/
 static unsigned char g_can_app_ready;
@@ -207,6 +212,10 @@ void LED_Toggle(void)
     P6_bit.no7 = ~P6_bit.no7;
 }
 
+/* Foreground service point called repeatedly by the selected main adapter.
+ * Keep protocol/application work and text logging bounded so pending traffic and deferred actions
+ * can continue.
+ */
 void loop(void)
 {
     static unsigned long LOG1 = 0;
@@ -741,6 +750,10 @@ int __far putchar(int c)
     return c;
 }
 
+/* Initialize the role selected by this project before foreground processing.
+ * Preserve clock, image/handoff and peripheral/IRQ enable order when adding application
+ * initialization.
+ */
 void hardware_init(void)
 {
     unsigned char can_initialized;

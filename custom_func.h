@@ -2,6 +2,11 @@
 
 /*_____ D E C L A R A T I O N S ____________________________________________*/
 #define bool  _Bool
+/* Project/API reading notes: User entry declarations shared with the selected main/startup
+ * adapter.
+ * Implement application initialization in hardware_init() and recurring foreground work in
+ * loop(); peripheral ISR declarations remain with their owning driver.
+ */
 
 #ifndef TRUE
 #define TRUE  (1)

@@ -36,7 +36,7 @@ Includes
 #include "r_cg_serial.h"
 #include "r_cg_timer.h"
 /* Start user code for include. Do not edit comment generated here */
-#include "../../../RL78_F13_Boot_loader_CAN/f13_board_support.h"
+#include "f13_board_support.h"
 /* Preserve this hook on regeneration. The generated HOCO-only clock body
  * is not the CAN board baseline; defer X1/PLL waits until hardware_init. */
 #define R_CGC_Create F13_BoardClockPrepare

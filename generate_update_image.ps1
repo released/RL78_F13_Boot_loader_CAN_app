@@ -15,11 +15,11 @@ param(
 
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version 2.0
-. (Join-Path $PSScriptRoot '..\RL78_F13_Boot_loader_CAN\app_config.ps1')
-. (Join-Path $PSScriptRoot '..\RL78_F13_Boot_loader_CAN\app_build_report.ps1')
+. (Join-Path $PSScriptRoot 'app_config.ps1')
+. (Join-Path $PSScriptRoot 'app_build_report.ps1')
 
 # Reject stale/tampered generated inputs before using any old linker output.
-& (Join-Path $PSScriptRoot '..\RL78_F13_Boot_loader_CAN\generate_irq_contract.ps1') `
+& (Join-Path $PSScriptRoot 'generate_irq_contract.ps1') `
     -Mode App -AppProject $PSScriptRoot -CheckOnly
 
 $tableConfigPath = Join-Path $PSScriptRoot 'ftable.inc'
@@ -403,7 +403,7 @@ foreach ($obsoleteOutputPath in $obsoleteOutputPaths) {
 [IO.File]::WriteAllBytes($updateBinPath, $appImage)
 Write-IntelHex -Path $updateHexPath -StartAddress $AppStart -Data $appImage
 
-$bootHexPath = Join-Path $projectDirectory "..\RL78_F13_Boot_loader_CAN\DefaultBuild\boot0000_1FFF.hex"
+$bootHexPath = Join-Path $projectDirectory "DefaultBuild\boot0000_1FFF.hex"
 if (Test-Path -LiteralPath $bootHexPath) {
     # Programmer image stops before the protected final erase block.
     $combined = New-Object byte[] $AppEndExclusive

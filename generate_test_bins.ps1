@@ -27,16 +27,11 @@ try {
     $project=(Resolve-Path -LiteralPath $ProjectRoot).Path.TrimEnd('\')
     Assert-TestBinPlainPath $project
     $stem=Split-Path -Leaf $project
-    if(!$BootProject){
-        if(!$stem.EndsWith('_app',[StringComparison]::OrdinalIgnoreCase)){
-            throw 'Specify -BootProject for an App folder without the _app suffix.'
-        }
-        $BootProject=Join-Path (Split-Path -Parent $project) $stem.Substring(0,$stem.Length-4)
-    }
+    if(!$BootProject){$BootProject=$project}
     $boot=(Resolve-Path -LiteralPath $BootProject).Path
     $reader=Join-Path $boot 'app_config.ps1'
     if(!(Test-Path -LiteralPath $reader)){ $reader=Join-Path $boot 'tools\app_config.ps1' }
-    if(!(Test-Path -LiteralPath $reader)){throw 'The paired Boot C-header reader app_config.ps1 is required.'}
+    if(!(Test-Path -LiteralPath $reader)){throw 'The project-local C-header reader app_config.ps1 is required.'}
     . $reader
     if(!$InputBin){$InputBin=Join-Path $project ('DefaultBuild\'+$stem+'_update.bin')}
     $source=(Resolve-Path -LiteralPath $InputBin).Path
@@ -150,11 +145,10 @@ public static class DeviceFfTestBin {
     [DeviceFfTestBin]::Validate($original)
     . (Join-Path $PSScriptRoot 'device_test_bins_output.ps1')
     $contractHeader=Join-Path $boot 'image_metadata_config.h'
-    if(!(Test-Path -LiteralPath $contractHeader)){$contractHeader=Join-Path $boot 'common\image_metadata_config.h'}
     $contract=[IO.File]::ReadAllText($contractHeader)
     function Image-Literal([string]$Key) {
         $match=[regex]::Match($contract,'(?m)^#define\s+'+[regex]::Escape($Key)+'\s+(\(?(?:0[xX][0-9A-Fa-f]+|[0-9]+)[uUlL]*\)?)\s*(?:/\*.*)?$')
-        if(!$match.Success){throw ('Missing literal Boot image contract: '+$Key)}
+        if(!$match.Success){throw ('Missing literal project image contract: '+$Key)}
         return ConvertFrom-AppUnsignedLiteral $match.Groups[1].Value
     }
     foreach($field in @(@(0x100,'IMAGE_MANIFEST_MAGIC'),@(0x11c,'IMAGE_APPLICATION_START'),
@@ -162,10 +156,10 @@ public static class DeviceFfTestBin {
         @(0x12c,'IMAGE_ERASE_BLOCK_SIZE'),@(0x15c,'IMAGE_MINIMUM_IMAGE_SIZE'),@(0x168,'IMAGE_IRQ_ABI'),
         @(0x16c,'IMAGE_BOOT_VERSION'))) {
         if([DeviceFfTestBin]::Read32($original,$field[0]) -ne (Image-Literal $field[1])) {
-            throw ('Source BIN differs from the paired Boot contract: '+$field[1])
+            throw ('Source BIN differs from the selected project contract: '+$field[1])
         }
     }
-    if([BitConverter]::ToUInt16($original,0x10c) -ne (Image-Literal IMAGE_TARGET_ID)){throw 'Source target differs from paired Boot.'}
+    if([BitConverter]::ToUInt16($original,0x10c) -ne (Image-Literal IMAGE_TARGET_ID)){throw 'Source target differs from the selected project contract.'}
     $isCan=[DeviceFfTestBin]::Read32($original,0x100) -eq 0x004e4143
     $protocol=[DeviceFfTestBin]::Read32($original,0x108)
     if($isCan) {
@@ -177,17 +171,16 @@ public static class DeviceFfTestBin {
             $expectedMode=if($definitions -match '(?m)^RH850_CAN_FD\s*=\s*1\s*$'){2}else{1}
         } else {
             $mode=[regex]::Match($canText,'(?m)^#define\s+CAN_BOOT_CAN_MODE_(?:MASK|CLASSICAL)\s+(\([^\r\n)]+\))')
-            if(!$mode.Success){throw 'Missing literal CAN mode in paired Boot.'}
+            if(!$mode.Success){throw 'Missing literal CAN mode in the selected project contract.'}
             $expectedMode=ConvertFrom-AppUnsignedLiteral $mode.Groups[1].Value
         }
         if($original[0x10e] -ne $expectedMode){throw 'Source CAN mode differs from this App project.'}
     } else {
         $setting=Join-Path $boot 'isp_transport_config.h'
-        if(!(Test-Path -LiteralPath $setting)){$setting=Join-Path $boot 'common\isp_transport_config.h'}
         $text=[IO.File]::ReadAllText($setting)
         $match=[regex]::Match($text,'(?m)^#define\s+ISP_BOOT_PROTOCOL_ID\s+(\([^\r\n)]+\))')
         if(!$match.Success -or ($protocol -band 0xffff) -ne (ConvertFrom-AppUnsignedLiteral $match.Groups[1].Value)){
-            throw 'Source ISP protocol differs from this paired Boot.'
+            throw 'Source ISP protocol differs from the selected project contract.'
         }
     }
     $transport=if($isCan){if($original[0x10e] -eq 2){'CAN FD'}else{'Classical CAN'}}

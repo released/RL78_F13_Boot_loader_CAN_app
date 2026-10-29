@@ -51,7 +51,7 @@
 #define CAN_CFG_DLC_ERROR_IE        CAN_DISABLE
 
 /* ---- Rx rule ---- */
-#define CAN_RX_RULE_NUM_CH0         (1U)
+#define CAN_RX_RULE_NUM_CH0         (2U)
 #define CAN_RX_RULE_NUM             CAN_RX_RULE_NUM_CH0
 
 /* ---- Rx buffer ---- */

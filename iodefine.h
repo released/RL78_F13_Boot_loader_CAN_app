@@ -24,9 +24,7 @@
 /* File Name  : iodefine.h                                                    */
 /* Abstract   : Definition of Special Function Register (SFR)                 */
 /* History    : V1.11  [Device File version]                                  */
-/* Options    : -df=C:\Program Files (x86)\Renesas Electronics\CS+\CC\Device\ */
-/*              RL78\Devicefile\DR5F10BMG.DVF -o=D:\SourceCode\Renesas\CS+\RL */
-/*              78_F13_EVB\iodefine.h -f                                      */
+/* Options    : -df=DR5F10BMG.DVF -o=iodefine.h -f */
 /* Date       : 2024/3/25                                                     */
 /* Version    : V1.19.00.01  [df2iodef.exe version]                           */
 /* This is a typical example.                                                 */
